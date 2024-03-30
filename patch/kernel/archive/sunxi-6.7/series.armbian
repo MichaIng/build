@@ -25,6 +25,7 @@
 	patches.armbian/drv-iio-sun4i-gpadc-iio-don-t-force-poweroff.patch
 	patches.armbian/drv-staging-media-sunxi-cedrus-add-H616-variant.patch
 	patches.armbian/drv-soc-sunxi-sram-Add-SRAM-C1-H616-handling.patch
+	patches.armbian/drv-gpio-sysfs-without-expert.patch
 ###################
 -	patches.armbian/drv-media-cedrus-hevc-tiles-hack.patch
 -	patches.armbian/drv-media-cedrus-Add-callback-for-buffer-cleanup.patch
