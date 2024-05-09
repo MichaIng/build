@@ -1,0 +1,40 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
+index c718b8d..9a0123c 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
+@@ -70,6 +70,17 @@
+ 	reset-gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
+ 	vpcie3v3-supply = <&vcc3v3_pcie>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		reg = <0x00100000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		r8125_2: pcie@10,0 {
++			reg = <0x000000 0 0 0 0>;
++			local-mac-address = [ 00 00 00 00 00 00 ];
++		};
++	};
+ };
+
+ &pcie3x2 {
+@@ -77,6 +88,17 @@
+ 	reset-gpios = <&gpio0 RK_PB6 GPIO_ACTIVE_HIGH>;
+ 	vpcie3v3-supply = <&vcc3v3_pcie>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		reg = <0x00200000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		r8125_1: pcie@20,0 {
++			reg = <0x000000 0 0 0 0>;
++			local-mac-address = [ 00 00 00 00 00 00 ];
++		};
++	};
+ };
+
+ &pinctrl {
