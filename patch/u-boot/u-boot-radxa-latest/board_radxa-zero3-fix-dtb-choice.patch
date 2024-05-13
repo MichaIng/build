@@ -1,0 +1,19 @@
+diff --git a/board/rockchip/evb_rk3568/evb_rk3568.c b/board/rockchip/evb_rk3568/evb_rk3568.c
+index 43b8de4..72a419b 100644
+--- a/board/rockchip/evb_rk3568/evb_rk3568.c
++++ b/board/rockchip/evb_rk3568/evb_rk3568.c
+@@ -24,10 +24,10 @@ struct variant_def {
+ 
+ #ifdef CONFIG_ID_EEPROM
+ static struct variant_def variants[] = {
+-	{"radxa,zero3",   230, 270, 0, -1, "rockchip/rk3566-radxa-zero-3w-aic8800ds2.dtb"},
+-	{"radxa,zero3",   400, 450, 0, -1, "rockchip/rk3566-radxa-zero-3e.dtb"},
+-	{"radxa,zero3",   451, 510, 0, -1, "rockchip/rk3566-radxa-zero-3w-ap6212.dtb"},
+-	{"radxa,rock-3c", 300, 360, 0, -1, "rockchip/rk3566-rock-3c-aic8800ds2.dtb"},
++	{"radxa,zero3",   230, 270, 0, -1, "rockchip/rk3566-radxa-zero3.dtb"},
++	{"radxa,zero3",   400, 450, 0, -1, "rockchip/rk3566-radxa-zero3.dtb"},
++	{"radxa,zero3",   451, 510, 0, -1, "rockchip/rk3566-radxa-zero3-ap6212.dtb"},
++	{"radxa,rock-3c", 300, 360, 0, -1, "rockchip/rk3566-rock-3c.dtb"},
+ };
+ 
+ static void set_fdtfile(void)
