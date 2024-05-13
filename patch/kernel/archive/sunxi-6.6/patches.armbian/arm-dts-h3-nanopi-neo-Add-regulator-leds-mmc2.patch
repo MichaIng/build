@@ -11,30 +11,10 @@ diff --git a/arch/arm/boot/dts/allwinner/sun8i-h3-nanopi-neo.dts b/arch/arm/boot
 index df71fab3cf4e..032849663443 100644
 --- a/arch/arm/boot/dts/allwinner/sun8i-h3-nanopi-neo.dts
 +++ b/arch/arm/boot/dts/allwinner/sun8i-h3-nanopi-neo.dts
-@@ -49,6 +49,63 @@ / {
+@@ -49,6 +49,43 @@ / {
  	aliases {
  		ethernet0 = &emac;
  	};
-+
-+	/* Warning: sunxi-5.18:
-+	 * The leds node is present in the sun8i-h3-nanopi.dtsi file
-+	 * You will have to fix this situation yourself
-+	 */
-+	leds {
-+		compatible = "gpio-leds";
-+
-+		pwr {
-+			label = "nanopi:red:pwr";
-+			gpios = <&r_pio 0 10 GPIO_ACTIVE_HIGH>; /* PL10 */
-+			linux,default-trigger = "default-on";
-+		};
-+
-+		status {
-+			label = "nanopi:green:status";
-+			gpios = <&pio 0 10 GPIO_ACTIVE_HIGH>; /* PA10 */
-+			linux,default-trigger = "heartbeat";
-+		};
-+	};
 +
 +	vdd_cpux: gpio-regulator {
 +		compatible = "regulator-gpio";
