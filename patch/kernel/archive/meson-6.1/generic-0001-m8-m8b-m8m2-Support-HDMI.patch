@@ -1089,15 +1089,6 @@ index 3b24a924b7b..091c670ab0e 100644
  	}
  
  	/* Encoder Initialization */
-@@ -319,7 +509,7 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
- 		ret = component_bind_all(drm->dev, drm);
- 		if (ret) {
- 			dev_err(drm->dev, "Couldn't bind all components\n");
--			goto exit_afbcd;
-+			goto exit_cvbs_dac_phy;
- 		}
- 	}
- 
 @@ -353,7 +543,7 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
  	if (ret)
  		goto uninstall_irq;
