@@ -41,6 +41,7 @@ case $BRANCH in
 
 	legacy)
 		declare -g KERNEL_MAJOR_MINOR="6.1"
+		#declare -g KERNELBRANCH="tag:v6.1.80"
 		;;
 	current)
 		declare -g KERNEL_MAJOR_MINOR="6.6"
