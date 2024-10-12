@@ -331,6 +331,9 @@ function kernel_package_callback_linux_dtb() {
 	mkdir -p "${package_directory}/boot/"
 	run_host_command_logged cp -rp "${tmp_kernel_install_dirs[INSTALL_DTBS_PATH]}" "${package_directory}/boot/dtb-${kernel_version_family}"
 
+	# Create symlink for old Orange Pi 3B device tree for transition from custom to mainline dtb: https://dietpi.com/forum/t/20689/22
+	[[ -f "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b-v1.1.dtb" ]] && run_host_command_logged ln -s 'rk3566-orangepi-3b-v1.1.dtb' "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b.dtb"
+
 	# Generate a control file
 	cat <<- CONTROL_FILE > "${package_DEBIAN_dir}/control"
 		Version: ${artifact_version}
