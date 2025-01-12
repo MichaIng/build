@@ -173,6 +173,9 @@ index 000000000000..111111111111
 +	phy-supply = <&reg_gmac_3v3>;
 +	allwinner,rx-delay-ps = <200>;
 +	allwinner,tx-delay-ps = <300>;
++	snps,reset-active-low;
++	snps,reset-delays-us = <10000 100000>;
++	snps,reset-gpio = <&pio 3 14 GPIO_ACTIVE_LOW>; /* PD14 */
 +	status = "okay";
 +};
 +
@@ -209,9 +212,6 @@ index 000000000000..111111111111
 +		compatible = "ethernet-phy-ieee802.3-c22";
 +		reg = <1>;
 +		motorcomm,clk-out-frequency-hz = <125000000>;
-+		reset-gpios = <&pio 3 14 GPIO_ACTIVE_LOW>; /* PD14 */
-+		reset-assert-us = <15000>;
-+		reset-deassert-us = <40000>;
 +	};
 +};
 +
