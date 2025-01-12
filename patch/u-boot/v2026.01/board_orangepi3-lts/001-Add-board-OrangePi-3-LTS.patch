@@ -27,7 +27,7 @@ new file mode 100644
 index 00000000000..5291792b3f2
 --- /dev/null
 +++ b/arch/arm/dts/sun50i-h6-orangepi-3-lts.dts
-@@ -0,0 +1,392 @@
+@@ -0,0 +1,391 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +// Copyright (C) 2019 Ondřej Jirman <megous@megous.com>
 +// Copyright (C) 2023 Jernej Skrabec <jernej.skrabec@gmail.com>
@@ -172,10 +172,13 @@ index 00000000000..5291792b3f2
 +	status = "okay";
 +	pinctrl-0 = <&ext_rgmii_pins>;
 +	pinctrl-names = "default";
-+	phy-mode = "rgmii";
++	phy-mode = "rgmii-id";
 +	phy-handle = <&ext_rgmii_phy>;
-+	allwinner,tx-delay-ps = <700>;
-+	allwinner,rx-delay-ps = <1700>;
++	allwinner,tx-delay-ps = <300>;
++	allwinner,rx-delay-ps = <200>;
++	snps,reset-active-low;
++	snps,reset-delays-us = <10000 100000>;
++	snps,reset-gpio = <&pio 3 14 GPIO_ACTIVE_LOW>; /* PD14 */
 +};
 +
 +&gpu {
@@ -197,10 +200,6 @@ index 00000000000..5291792b3f2
 +	ext_rgmii_phy: ethernet-phy@1 {
 +		compatible = "ethernet-phy-ieee802.3-c22";
 +		reg = <1>;
-+
-+		reset-gpios = <&pio 3 14 GPIO_ACTIVE_LOW>; /* PD14 */
-+		reset-assert-us = <15000>;
-+		reset-deassert-us = <40000>;
 +	};
 +};
 +
