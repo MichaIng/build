@@ -15,7 +15,7 @@ new file mode 100644
 index 0000000..dd25549
 --- /dev/null
 +++ b/arch/arm/dts/sun50i-h5-nanopi-neo-core2.dts
-@@ -0,0 +1,113 @@
+@@ -0,0 +1,140 @@
 +/*
 + * Copyright (C) 2017 Antony Antony <antony@phenome.org>
 + * Copyright (c) 2016 ARM Ltd.
@@ -70,6 +70,7 @@ index 0000000..dd25549
 +	compatible = "friendlyarm,nanopi-neo-core2", "allwinner,sun50i-h5";
 +
 +	aliases {
++		ethernet0 = &emac;
 +		serial0 = &uart0;
 +	};
 +
@@ -79,6 +80,16 @@ index 0000000..dd25549
 +
 +	memory {
 +		reg = <0x40000000 0x40000000>;
++	};
++
++	reg_gmac_3v3: gmac-3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "gmac-3v3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		startup-delay-us = <100000>;
++		enable-active-high;
++		gpio = <&pio 3 6 GPIO_ACTIVE_HIGH>;
 +	};
 +
 +	reg_vcc3v3: vcc3v3 {
@@ -91,6 +102,22 @@ index 0000000..dd25549
 +
 +&ehci1 {
 +	status = "okay";
++};
++
++&emac {
++	pinctrl-names = "default";
++	pinctrl-0 = <&emac_rgmii_pins>;
++	phy-supply = <&reg_gmac_3v3>;
++	phy-handle = <&ext_rgmii_phy>;
++	phy-mode = "rgmii-id";
++	status = "okay";
++};
++
++&external_mdio {
++	ext_rgmii_phy: ethernet-phy@7 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <7>;
++	};
 +};
 +
 +&mmc0 {
