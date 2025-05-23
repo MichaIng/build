@@ -118,7 +118,6 @@ Subject: [PATCH] adjust uwe5622 driver for rockchip
  .../wireless/uwe5622/unisocwcn/sdio/Kconfig   |    0
  .../wireless/uwe5622/unisocwcn/sdio/Makefile  |    0
  .../wireless/uwe5622/unisocwcn/sdio/sdio_v3.c |   16 +-
- .../wireless/uwe5622/unisocwcn/sdio/sdiohal.h |    2 +-
  .../uwe5622/unisocwcn/sdio/sdiohal_common.c   |    0
  .../uwe5622/unisocwcn/sdio/sdiohal_ctl.c      |    0
  .../uwe5622/unisocwcn/sdio/sdiohal_main.c     |   19 +-
@@ -222,7 +221,7 @@ Subject: [PATCH] adjust uwe5622 driver for rockchip
  .../net/wireless/uwe5622/unisocwifi/wl_intf.h |    2 -
  .../net/wireless/uwe5622/unisocwifi/work.c    |    0
  .../net/wireless/uwe5622/unisocwifi/work.h    |    0
- 218 files changed, 3730 insertions(+), 849 deletions(-)
+ 217 files changed, 3729 insertions(+), 848 deletions(-)
  mode change 100644 => 100755 drivers/net/wireless/uwe5622/tty-sdio/Kconfig
  mode change 100644 => 100755 drivers/net/wireless/uwe5622/tty-sdio/Makefile
  create mode 100755 drivers/net/wireless/uwe5622/tty-sdio/Makefile.old
@@ -335,7 +334,6 @@ Subject: [PATCH] adjust uwe5622 driver for rockchip
  mode change 100644 => 100755 drivers/net/wireless/uwe5622/unisocwcn/sdio/Kconfig
  mode change 100644 => 100755 drivers/net/wireless/uwe5622/unisocwcn/sdio/Makefile
  mode change 100644 => 100755 drivers/net/wireless/uwe5622/unisocwcn/sdio/sdio_v3.c
- mode change 100644 => 100755 drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h
  mode change 100644 => 100755 drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_common.c
  mode change 100644 => 100755 drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_ctl.c
  mode change 100644 => 100755 drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_main.c
@@ -2203,21 +2201,6 @@ index 98f48335316..a37fe8c55d6
  	slp_mgr_drv_sleep(subsys, false);
  	slp_mgr_wakeup(subsys);
  #endif
-diff --git a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h
-old mode 100644
-new mode 100755
-index c26bfb3251b..f87dfafe9c8
---- a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h
-+++ b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h
-@@ -62,7 +62,7 @@ extern long int sdiohal_log_level;
- 	} while (0)
- #define sdiohal_pr_perf(fmt, args...) \
- 	do { if (sdiohal_log_level & SDIOHAL_PERF_LEVEL) \
--		trace_printk(fmt, ## args); \
-+		printk(fmt, ## args); \
- 	} while (0)
- #else
- #define sdiohal_normal(fmt, args...)
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_main.c b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_main.c
 old mode 100644
 new mode 100755

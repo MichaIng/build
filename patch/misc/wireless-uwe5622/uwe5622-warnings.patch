@@ -8,9 +8,10 @@ Subject: [PATCH] uwe5622: various warning and firmware path fixes
  .../uwe5622/unisocwcn/platform/rdc_debug.c    |  4 +-
  .../uwe5622/unisocwcn/platform/wcn_boot.c     |  2 -
  .../unisocwcn/platform/wcn_parn_parser.c      |  2 +-
+ .../unisocwcn/sdio/sdiohal.h                  |  2 +-
  .../uwe5622/unisocwcn/sdio/sdiohal_ctl.c      | 42 ++++++-------------
  .../wireless/uwe5622/unisocwifi/cfg80211.c    |  4 --
- 6 files changed, 17 insertions(+), 39 deletions(-)
+ 7 files changed, 18 insertions(+), 40 deletions(-)
 
 diff --git a/drivers/net/wireless/uwe5622/Makefile b/drivers/net/wireless/uwe5622/Makefile
 index 71c863c1017..d2210439f3c 100644
@@ -69,6 +70,19 @@ index 9abcd326972..c1557dcce3f 100755
  		if (strlen(fstab_name) > 1)
  			fstab_name[strlen(fstab_name)] = '/';
  		iterate_dir(file1, &ctx);
+diff --git a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h
+index c26bfb3251b..f87dfafe9c8
+--- a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h
++++ b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h
+@@ -62,7 +62,7 @@ extern long int sdiohal_log_level;
+ 	} while (0)
+ #define sdiohal_pr_perf(fmt, args...) \
+ 	do { if (sdiohal_log_level & SDIOHAL_PERF_LEVEL) \
+-		trace_printk(fmt, ## args); \
++		printk(fmt, ## args); \
+ 	} while (0)
+ #else
+ #define sdiohal_normal(fmt, args...)
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_ctl.c b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_ctl.c
 index b426bf89cd9..8000bfea378 100755
 --- a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_ctl.c
