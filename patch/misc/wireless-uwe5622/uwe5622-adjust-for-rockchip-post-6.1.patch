@@ -17,7 +17,6 @@ Subject: adjust uwe5622 driver for rockchip
  drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_misc.c        |   13 +-
  drivers/net/wireless/uwe5622/unisocwcn/platform/wcn_procfs.c      |   11 +-
  drivers/net/wireless/uwe5622/unisocwcn/sdio/sdio_v3.c             |   12 +-
- drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h             |    2 +-
  drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_main.c        |   19 +-
  drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_rx.c          |    2 +-
  drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_tx.c          |    2 +-
@@ -44,7 +43,7 @@ Subject: adjust uwe5622 driver for rockchip
  drivers/net/wireless/uwe5622/unisocwifi/wl_core.c                 |  108 +-
  drivers/net/wireless/uwe5622/unisocwifi/wl_intf.c                 |  112 +-
  drivers/net/wireless/uwe5622/unisocwifi/wl_intf.h                 |    2 -
- 40 files changed, 3472 insertions(+), 597 deletions(-)
+ 39 files changed, 3471 insertions(+), 596 deletions(-)
 
 diff --git a/drivers/net/wireless/uwe5622/Kconfig b/drivers/net/wireless/uwe5622/Kconfig
 index a1e123b039bd..fe6c8d115c92 100644
@@ -1805,21 +1804,6 @@ index 98f483353168..eec80dea067b
  	slp_mgr_drv_sleep(subsys, false);
  	slp_mgr_wakeup(subsys);
  #endif
-diff --git a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h
-old mode 100644
-new mode 100755
-index c26bfb3251b4..f87dfafe9c83
---- a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h
-+++ b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal.h
-@@ -62,7 +62,7 @@ extern long int sdiohal_log_level;
- 	} while (0)
- #define sdiohal_pr_perf(fmt, args...) \
- 	do { if (sdiohal_log_level & SDIOHAL_PERF_LEVEL) \
--		trace_printk(fmt, ## args); \
-+		printk(fmt, ## args); \
- 	} while (0)
- #else
- #define sdiohal_normal(fmt, args...)
 diff --git a/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_main.c b/drivers/net/wireless/uwe5622/unisocwcn/sdio/sdiohal_main.c
 old mode 100644
 new mode 100755
