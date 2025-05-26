@@ -65,8 +65,8 @@ function compile_firmware() {
 		Version: ${artifact_version}
 		Architecture: all
 		Maintainer: $MAINTAINER <$MAINTAINERMAIL>
-		Conflicts: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, armbian-firmware${REPLACE}${extra_conflicts_comma}
-		Provides: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, armbian-firmware${REPLACE}${extra_conflicts_comma}
+		Conflicts: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, firmware-atheros, firmware-iwlwifi, firmware-mediatek, armbian-firmware${REPLACE}${extra_conflicts_comma}
+		Provides: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, firmware-atheros, firmware-iwlwifi, firmware-mediatek, armbian-firmware${REPLACE}${extra_conflicts_comma}
 		Section: kernel
 		Priority: optional
 		Description: Armbian - Linux firmware${FULL}
