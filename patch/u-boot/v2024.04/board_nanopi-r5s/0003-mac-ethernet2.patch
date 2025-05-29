@@ -1,0 +1,15 @@
+diff --git a/arch/arm/mach-rockchip/misc.c b/arch/arm/mach-rockchip/misc.c
+index 7d03f0c2b67..4bb00d9a73a 100644
+--- a/arch/arm/mach-rockchip/misc.c
++++ b/arch/arm/mach-rockchip/misc.c
+@@ -56,6 +56,10 @@ int rockchip_setup_macaddr(void)
+ 	/* Make a valid MAC address for ethernet1 */
+ 	mac_addr[5] ^= 0x01;
+ 	eth_env_set_enetaddr("eth1addr", mac_addr);
++
++	/* Make a valid MAC address for ethernet2 */
++	mac_addr[5] ^= 0x03;
++	eth_env_set_enetaddr("eth2addr", mac_addr);
+ #endif
+ 	return 0;
+ }
