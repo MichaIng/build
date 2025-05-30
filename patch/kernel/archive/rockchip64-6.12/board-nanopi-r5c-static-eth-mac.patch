@@ -1,0 +1,66 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
+index c718b8dbb9c6b..58d893b87d121 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
+@@ -13,6 +13,11 @@ / {
+ 	model = "FriendlyElec NanoPi R5C";
+ 	compatible = "friendlyarm,nanopi-r5c", "rockchip,rk3568";
+ 
++	aliases {
++		ethernet0 = &r8125_1;
++		ethernet1 = &r8125_2;
++	};
++
+ 	gpio-keys {
+ 		compatible = "gpio-keys";
+ 		pinctrl-names = "default";
+@@ -34,6 +34,7 @@ gpio-leds {
+ 		led-lan {
+ 			color = <LED_COLOR_ID_GREEN>;
+ 			function = LED_FUNCTION_LAN;
+ 			gpios = <&gpio3 RK_PA3 GPIO_ACTIVE_HIGH>;
++			linux,default-trigger = "r8169-1-100:00:link";
+ 		};
+ 
+@@ -47,6 +48,7 @@ power_led: led-power {
+ 		led-wan {
+ 			color = <LED_COLOR_ID_GREEN>;
+ 			function = LED_FUNCTION_WAN;
+ 			gpios = <&gpio3 RK_PA4 GPIO_ACTIVE_HIGH>;
++			linux,default-trigger = "r8169-2-100:00:link";
+ 		};
+ 
+@@ -70,6 +75,16 @@ &pcie3x1 {
+ 	reset-gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
+ 	vpcie3v3-supply = <&vcc3v3_pcie>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		reg = <0 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++		r8125_1: pcie@1,0 {
++			reg = <0 0 0 0 0>;
++			local-mac-address = [ 00 00 00 00 00 00 ];
++		};
++	};
+ };
+ 
+ &pcie3x2 {
+@@ -77,6 +92,16 @@ &pcie3x2 {
+ 	reset-gpios = <&gpio0 RK_PB6 GPIO_ACTIVE_HIGH>;
+ 	vpcie3v3-supply = <&vcc3v3_pcie>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		reg = <0 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++		r8125_2: pcie@1,0 {
++			reg = <0 0 0 0 0>;
++			local-mac-address = [ 00 00 00 00 00 00 ];
++		};
++	};
+ };
+ 
+ &pinctrl {
