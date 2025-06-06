@@ -316,8 +316,8 @@ function kernel_package_callback_linux_image() {
 					# "install" or "upgrade" are decided in a very contrived way by Debian (".fresh-install" file)
 					# do NOT do this if /boot is a vfat, though.
 					if ! is_boot_dev_vfat; then
-						echo "Armbian: Debian compat: linux-update-symlinks install ${kernel_version_family} ${installed_image_path}"
-						linux-update-symlinks install "${kernel_version_family}" "${installed_image_path}" || true
+						echo "Armbian: Debian compat: linux-update-symlinks install ${kernel_version_family} /${installed_image_path}"
+						linux-update-symlinks install "${kernel_version_family}" "/${installed_image_path}" || true
 					fi
 				HOOK_FOR_DEBIAN_COMPAT_SYMLINK
 			fi
