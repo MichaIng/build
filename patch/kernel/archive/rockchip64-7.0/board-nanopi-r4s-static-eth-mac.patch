@@ -1,0 +1,48 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dtsi
+index 8d94d9f91a5c6..48b4e8eac7311 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi-r4s.dtsi
+@@ -19,6 +19,10 @@
+ / {
+ 	/delete-node/ display-subsystem;
+ 
++	aliases {
++		ethernet1 = &r8111;
++	};
++
+ 	gpio-leds {
+ 		pinctrl-0 = <&lan_led_pin>, <&sys_led_pin>, <&wan_led_pin>;
+ 
+@@ -27,6 +31,7 @@ gpio-leds {
+ 		lan_led: led-lan {
+ 			gpios = <&gpio1 RK_PA1 GPIO_ACTIVE_HIGH>;
+ 			label = "green:lan";
++			linux,default-trigger = "r8169-0-100:00:link";
+ 		};
+ 
+ 		sys_led: led-sys {
+@@ -38,6 +43,7 @@ sys_led: led-sys {
+ 		wan_led: led-wan {
+ 			gpios = <&gpio1 RK_PA0 GPIO_ACTIVE_HIGH>;
+ 			label = "green:wan";
++			linux,default-trigger = "stmmac-0:01:link";
+ 		};
+ 	};
+ 
+@@ -74,6 +80,16 @@ &pcie0 {
+ 	max-link-speed = <1>;
+ 	num-lanes = <1>;
+ 	vpcie3v3-supply = <&vcc3v3_sys>;
++
++	pcie@0,0 {
++		reg = <0 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++		r8111: pcie@1,0 {
++			reg = <0 0 0 0 0>;
++			local-mac-address = [ 00 00 00 00 00 00 ];
++		};
++	};
+ };
+ 
+ &pinctrl {
