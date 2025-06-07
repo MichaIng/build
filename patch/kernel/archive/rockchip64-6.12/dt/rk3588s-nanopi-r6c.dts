@@ -6,7 +6,19 @@
 
 / {
 	model = "FriendlyElec NanoPi R6C";
-	compatible = "friendlyelec,nanopi-r6c", "rockchip,rk3588s";
+	compatible = "friendlyarm,nanopi-r6c", "rockchip,rk3588s";
+
+	aliases {
+		/delete-property/ ethernet2;
+	};
+};
+
+&wan_led {
+	linux,default-trigger = "stmmac-0:01:link";
+};
+
+&lan1_led {
+	linux,default-trigger = "r8169-3-3100:00:link";
 };
 
 &lan2_led {
