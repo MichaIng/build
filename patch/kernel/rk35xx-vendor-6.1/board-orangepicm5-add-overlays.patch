@@ -1,0 +1,709 @@
+From a4a3c28a183bf888de7acc9e14d29d81205c758a Mon Sep 17 00:00:00 2001
+From: MichaIng <micha@dietpi.com>
+Date: Sun, 8 Jun 2025 21:56:04 +0200
+Subject: [PATCH] orangepi-cm5: add overlays
+
+Signed-off-by: MichaIng <micha@dietpi.com>
+---
+ arch/arm64/boot/dts/rockchip/overlay/Makefile |  10 +++
+ .../overlay/orangepi-cm5-blink-gpio.dts       |  70 ++++++++++++
+ .../rockchip/overlay/orangepi-cm5-cam1.dts    |  60 ++++++++++
+ .../rockchip/overlay/orangepi-cm5-cam2.dts    |  60 ++++++++++
+ .../rockchip/overlay/orangepi-cm5-cam3.dts    |  68 +++++++++++
+ .../rockchip/overlay/orangepi-cm5-cam4.dts    |  68 +++++++++++
+ .../overlay/orangepi-cm5-tablet-cam1.dts      | 108 ++++++++++++++++++
+ .../overlay/orangepi-cm5-tablet-cam2.dts      |  60 ++++++++++
+ .../overlay/orangepi-cm5-tablet-cam3.dts      |  60 ++++++++++
+ .../orangepi-cm5-tablet-disable-leds.dts      |  16 +++
+ .../overlay/orangepi-cm5-tablet-lcd.dts       |  25 ++++
+ 11 files changed, 609 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-blink-gpio.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-cam1.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-cam2.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-cam3.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-cam4.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-cam1.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-cam2.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-cam3.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-disable-leds.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-lcd.dts
+
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/Makefile b/arch/arm64/boot/dts/rockchip/overlay/Makefile
+index a7c242cf18355..0b64753d69cb9 100644
+--- a/arch/arm64/boot/dts/rockchip/overlay/Makefile
++++ b/arch/arm64/boot/dts/rockchip/overlay/Makefile
+@@ -40,6 +40,16 @@ dtbo-$(CONFIG_ARCH_ROCKCHIP) += \
+ 	orangepi-5-ultra-cam1.dtbo \
+ 	orangepi-5-ultra-cam2.dtbo \
+ 	orangepi-5-ultra-disable-leds.dtbo \
++	orangepi-cm5-blink-gpio.dtbo \
++	orangepi-cm5-cam1.dtbo \
++	orangepi-cm5-cam2.dtbo \
++	orangepi-cm5-cam3.dtbo \
++	orangepi-cm5-cam4.dtbo \
++	orangepi-cm5-tablet-cam1.dtbo \
++	orangepi-cm5-tablet-cam2.dtbo \
++	orangepi-cm5-tablet-cam3.dtbo \
++	orangepi-cm5-tablet-lcd.dtbo \
++	orangepi-cm5-tablet-disable-leds.dtbo \
+ 	rock-3a-sata.dtbo \
+ 	rock-5a-hdmi-8k.dtbo \
+ 	rock-5a-i2c5-rtc-hym8563.dtbo \
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-blink-gpio.dts b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-blink-gpio.dts
+new file mode 100644
+index 0000000000000..551e03bf00505
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-blink-gpio.dts
+@@ -0,0 +1,70 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "rockchip,rk3588s-orangepi-cm5", "rockchip,rk3588";
++
++	fragment@0 {
++		target = <&leds>;
++
++		__overlay__ {
++			status = "okay";
++
++			gpio1_b3@0 {
++				gpios = <&gpio1 11 0>;
++				label = "gpio1_b3";
++				linux,default-trigger = "heartbeat";
++				linux,default-trigger-delay-ms = <0>;
++			};
++
++			gpio1_b1@1 {
++				gpios = <&gpio1 9 0>;
++				label = "gpio1_b1";
++				linux,default-trigger = "heartbeat";
++				linux,default-trigger-delay-ms = <0>;
++			};
++
++			gpio1_b4@2 {
++				gpios = <&gpio1 12 0>;
++				label = "gpio1_b4";
++				linux,default-trigger = "heartbeat";
++				linux,default-trigger-delay-ms = <0>;
++			};
++
++			gpio1_b2@3 {
++				gpios = <&gpio1 10 0>;
++				label = "gpio1_b2";
++				linux,default-trigger = "heartbeat";
++				linux,default-trigger-delay-ms = <0>;
++			};
++
++			gpio1_b7@4 {
++				gpios = <&gpio1 15 0>;
++				label = "gpio1_b7";
++				linux,default-trigger = "heartbeat";
++				linux,default-trigger-delay-ms = <0>;
++			};
++
++			gpio1_b6@5 {
++				gpios = <&gpio1 14 0>;
++				label = "gpio1_b6";
++				linux,default-trigger = "heartbeat";
++				linux,default-trigger-delay-ms = <0>;
++			};
++
++			gpio4_b2@6 {
++				gpios = <&gpio4 10 0>;
++				label = "gpio4_b2";
++				linux,default-trigger = "heartbeat";
++				linux,default-trigger-delay-ms = <0>;
++			};
++
++			gpio4_b3@7 {
++				gpios = <&gpio4 11 0>;
++				label = "gpio4_b3";
++				linux,default-trigger = "heartbeat";
++				linux,default-trigger-delay-ms = <0>;
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-cam1.dts b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-cam1.dts
+new file mode 100644
+index 0000000000000..660fd84550558
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-cam1.dts
+@@ -0,0 +1,60 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&csi2_dphy1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&mipi2_csi2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@2 {
++		target = <&rkcif_mipi_lvds2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@3 {
++		target = <&rkcif_mipi_lvds2_sditf>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@4 {
++		target = <&rkisp0_vir0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@5 {
++		target = <&i2c4>;
++
++		__overlay__ {
++			status = "okay";
++
++			ov5647-1@36 {
++				status = "okay";
++			};
++
++			imx219-1@10 {
++				status = "okay";
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-cam2.dts b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-cam2.dts
+new file mode 100644
+index 0000000000000..6e65092cf8209
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-cam2.dts
+@@ -0,0 +1,60 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&csi2_dphy2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&mipi3_csi2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@2 {
++		target = <&rkcif_mipi_lvds3>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@3 {
++		target = <&rkcif_mipi_lvds3_sditf>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@4 {
++		target = <&rkisp0_vir1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@5 {
++		target = <&i2c3>;
++
++		__overlay__ {
++			status = "okay";
++
++			ov5647-2@36 {
++				status = "okay";
++			};
++
++			imx219-2@10 {
++				status = "okay";
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-cam3.dts b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-cam3.dts
+new file mode 100644
+index 0000000000000..04460d9c2eb91
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-cam3.dts
+@@ -0,0 +1,68 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&csi2_dcphy1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&mipi1_csi2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@2 {
++		target = <&rkcif_mipi_lvds1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@3 {
++		target = <&rkcif_mipi_lvds1_sditf>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@4 {
++		target = <&rkisp1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@5 {
++		target = <&rkisp1_vir1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@6 {
++		target = <&i2c5>;
++
++		__overlay__ {
++			status = "okay";
++
++			ov5647-3@36 {
++				status = "okay";
++			};
++
++			imx219-3@10 {
++				status = "okay";
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-cam4.dts b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-cam4.dts
+new file mode 100644
+index 0000000000000..d19a6b0ccce87
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-cam4.dts
+@@ -0,0 +1,68 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&csi2_dcphy0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&mipi0_csi2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@2 {
++		target = <&rkcif_mipi_lvds>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@3 {
++		target = <&rkcif_mipi_lvds_sditf>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@4 {
++		target = <&rkisp1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@5 {
++		target = <&rkisp1_vir0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@6 {
++		target = <&i2c6>;
++
++		__overlay__ {
++			status = "okay";
++
++			ov5647-4@36 {
++				status = "okay";
++			};
++
++			imx219-4@10 {
++				status = "okay";
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-cam1.dts b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-cam1.dts
+new file mode 100644
+index 0000000000000..992669abf772b
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-cam1.dts
+@@ -0,0 +1,108 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&csi2_dphy0_hw>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&csi2_dphy0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@2 {
++		target = <&mipi2_csi2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@3 {
++		target = <&rkcif_mipi_lvds2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@4 {
++		target = <&rkcif_mipi_lvds2_sditf>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@5 {
++		target = <&rkisp0_vir1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@6 {
++		target = <&i2c1>;
++
++		__overlay__ {
++			status = "okay";
++
++			vm149c-p1@c {
++				status = "okay";
++			};
++
++			ov13850-1@10 {
++				status = "okay";
++			};
++
++			dw9714-p1@c {
++				status = "okay";
++			};
++
++			ov13855-1@36 {
++				status = "okay";
++			};
++		};
++	};
++
++	fragment@7 {
++		target = <&rkcif>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@8 {
++		target = <&rkcif_mmu>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@9 {
++		target = <&rkisp0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@10 {
++		target = <&isp0_mmu>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-cam2.dts b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-cam2.dts
+new file mode 100644
+index 0000000000000..34bd3deac9e24
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-cam2.dts
+@@ -0,0 +1,60 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&csi2_dcphy0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&mipi0_csi2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@2 {
++		target = <&rkcif_mipi_lvds>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@3 {
++		target = <&rkcif_mipi_lvds_sditf>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@4 {
++		target = <&rkisp1_vir0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@5 {
++		target = <&i2c6>;
++
++		__overlay__ {
++			status = "okay";
++
++			ov5647-cam2@36 {
++				status = "okay";
++			};
++
++			imx219-cam2@10 {
++				status = "okay";
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-cam3.dts b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-cam3.dts
+new file mode 100644
+index 0000000000000..025c5972dd45d
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-cam3.dts
+@@ -0,0 +1,60 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&csi2_dcphy1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&mipi1_csi2>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@2 {
++		target = <&rkcif_mipi_lvds1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@3 {
++		target = <&rkcif_mipi_lvds1_sditf>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@4 {
++		target = <&rkisp1_vir1>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@5 {
++		target = <&i2c7>;
++
++		__overlay__ {
++			status = "okay";
++
++			ov5647-cam3@36 {
++				status = "okay";
++			};
++
++			imx219-cam3@10 {
++				status = "okay";
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-disable-leds.dts b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-disable-leds.dts
+new file mode 100644
+index 0000000000000..0b814034f5002
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-disable-leds.dts
+@@ -0,0 +1,16 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&leds>;
++
++		__overlay__ {
++			status = "okay";
++
++			led@1 {
++				linux,default-trigger = "none";
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-lcd.dts b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-lcd.dts
+new file mode 100644
+index 0000000000000..d94b827ac9b69
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/orangepi-cm5-tablet-lcd.dts
+@@ -0,0 +1,25 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&dsi1>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&dsi1_panel>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@2 {
++		target = <&dsi1_in_vp2>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+-- 
+2.47.2
+
