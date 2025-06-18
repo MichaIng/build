@@ -11,3 +11,4 @@ KERNEL_TARGET="current,edge"
 KERNEL_TEST_TARGET="current"
 FULL_DESKTOP="yes"
 BOOT_SCENARIO="binman-atf-mainline"
+BOOT_SUPPORT_SPI=yes
