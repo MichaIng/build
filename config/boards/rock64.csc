@@ -12,3 +12,4 @@ KERNEL_TEST_TARGET="current"
 FULL_DESKTOP="yes"
 BOOT_SCENARIO="binman-atf-mainline"
 enable_extension "uboot-btrfs"
+BOOT_SUPPORT_SPI=yes
