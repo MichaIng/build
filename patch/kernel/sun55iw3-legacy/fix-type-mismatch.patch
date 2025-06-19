@@ -1,0 +1,26 @@
+diff --git a/bsp/drivers/npu/aw_nna_galcore/os/gc_hal_kernel_linux.h b/bsp/drivers/npu/aw_nna_galcore/os/gc_hal_kernel_linux.h
+index ca75aa2668d7e..c90d61a11ef06 100644
+--- a/bsp/drivers/npu/aw_nna_galcore/os/gc_hal_kernel_linux.h
++++ b/bsp/drivers/npu/aw_nna_galcore/os/gc_hal_kernel_linux.h
+@@ -337,7 +337,7 @@ gceSTATUS
+ _ConvertLogical2Physical(gckOS Os, gctPOINTER Logical, gctUINT32 ProcessID,
+                          PLINUX_MDL Mdl, gctPHYS_ADDR_T *Physical);
+ 
+-gctBOOL
++gceSTATUS
+ _QuerySignal(gckOS Os, gctSIGNAL Signal);
+ 
+ static inline gctINT
+diff --git a/bsp/drivers/npu/aw_nna_vip/linux/gc_vip_kernel_allocator.c b/bsp/drivers/npu/aw_nna_vip/linux/gc_vip_kernel_allocator.c
+index f49a82714703d..46aaaf9a72c14 100644
+--- a/bsp/drivers/npu/aw_nna_vip/linux/gc_vip_kernel_allocator.c
++++ b/bsp/drivers/npu/aw_nna_vip/linux/gc_vip_kernel_allocator.c
+@@ -2018,7 +2018,7 @@ static vip_status_e gckvip_map_user(
+     gckvip_dyn_allocate_node_t *node,
+     struct page **pages,
+     vip_uint32_t num_pages,
+-    gckvip_video_mem_alloc_flag_e alloc_flag,
++    vip_uint32_t alloc_flag,
+     void **logical
+     )
+ {

@@ -1,0 +1,280 @@
+diff --git a/Makefile b/Makefile
+index 077530cff69..a0a403e9ec3 100755
+--- a/Makefile
++++ b/Makefile
+@@ -280,31 +280,22 @@ $(info Prepare riscv toolchain ...);
+ $(shell mkdir -p ../tools/toolchain/$(RISCV_PATH) || exit 1)
+ $(shell tar --strip-components=1 -xf ../tools/toolchain/$(RISCV_PATH).tar.xz -C ../tools/toolchain/$(RISCV_PATH) || exit 1)
+ endif
+-arm_toolchain_check=$(shell if [ ! -d ../tools/toolchain/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi ]; then echo yes; else echo no; fi;)
+-ifeq (x$(arm_toolchain_check), xyes)
+-$(info Prepare arm toolchain ...);
+-$(shell mkdir -p ../tools/toolchain/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi || exit 1)
+-$(shell tar --strip-components=1 -xf ../tools/toolchain/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi.tar.xz -C ../tools/toolchain/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi || exit 1)
+-endif
+-
+ 
+ ifeq (x$(CONFIG_RISCV), xy)
+ ifeq (x$(CONFIG_ARCH_RV32I), xy)
+ CROSS_COMPILE := $(srctree)/../tools/toolchain/$(RISCV_PATH)/bin/riscv32-unknown-linux-
+-DTS_PATH := $(PWD)/arch/riscv/dts
++DTS_PATH := $(shell pwd)/arch/riscv/dts
+ else
+ CROSS_COMPILE := $(srctree)/../tools/toolchain/$(RISCV_PATH)/bin/riscv64-unknown-linux-gnu-
+-DTS_PATH := $(PWD)/arch/riscv/dts
++DTS_PATH := $(shell pwd)/arch/riscv/dts
+ endif
+ endif
+ 
+ ifeq (x$(CONFIG_ARM), xy)
+-CROSS_COMPILE := $(srctree)/../tools/toolchain/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi/bin/arm-linux-gnueabi-
+-DTS_PATH := $(PWD)/arch/arm/dts
++DTS_PATH := $(shell pwd)/arch/arm/dts
+ endif
+ 
+-CROSS_COMPILE ?= $(srctree)/../tools/toolchain/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabi/bin/arm-linux-gnueabi-
+-DTS_PATH ?= $(PWD)/arch/arm/dts
++DTS_PATH ?= $(shell pwd)/arch/arm/dts
+ 
+ #######################################################################
+ # set default to nothing for native builds
+@@ -441,6 +432,10 @@ KBUILD_CFLAGS   := -Wall -Wstrict-prototypes \
+ 		   -Wno-format-security \
+ 		   -fno-builtin -ffreestanding $(CSTD_FLAG) \
+ 		   -Werror
++KBUILD_CFLAGS	+= -Wno-error=pointer-to-int-cast \
++		   -Wno-error=int-to-pointer-cast \
++		   -Wno-error=array-bounds \
++		   -Wno-error=sizeof-pointer-div
+ ifeq (x$(CONFIG_ARCH_RV32I), xy)
+ KBUILD_CFLAGS	+= -Wno-error=address-of-packed-member
+ KBUILD_CFLAGS	+= -Wno-address-of-packed-member
+@@ -943,9 +938,9 @@ ALL-$(CONFIG_X86_RESET_VECTOR) += u-boot.rom
+ endif
+ 
+ # Build a combined spl + u-boot image for sunxi
+-ifeq ($(CONFIG_ARCH_SUNXI)$(CONFIG_SPL),yy)
++#ifeq ($(CONFIG_ARCH_SUNXI)$(CONFIG_SPL),yy)
+ ALL-y += u-boot-sunxi-with-spl.bin
+-endif
++#endif
+ 
+ # enable combined SPL/u-boot/dtb rules for tegra
+ ifeq ($(CONFIG_TEGRA)$(CONFIG_SPL),yy)
+@@ -1080,7 +1075,6 @@ u-boot.bin: u-boot-fit-dtb.bin FORCE
+ 	$(call if_changed,copy)
+ else ifeq ($(CONFIG_OF_SEPARATE),y)
+ u-boot-dtb.bin: u-boot-nodtb.bin dts/dt.dtb FORCE
+-	$(shell ./scripts/sunxi_ubootools ubootlength u-boot-nodtb.bin > /dev/null)
+ 	$(call if_changed,cat)
+ 
+ u-boot.bin: u-boot-dtb.bin FORCE
+diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+index 680c6e8516d..4556232ac6e 100644
+--- a/arch/arm/Makefile
++++ b/arch/arm/Makefile
+@@ -15,7 +15,7 @@ arch-$(CONFIG_CPU_PXA)		=
+ arch-$(CONFIG_CPU_ARM1136)	=-march=armv5
+ arch-$(CONFIG_CPU_ARM1176)	=-march=armv5t
+ arch-$(CONFIG_CPU_V7A)		=$(call cc-option, -march=armv7-a, \
+-				 $(call cc-option, -march=armv7, -march=armv5))
++				 $(call cc-option, -march=armv7))
+ arch-$(CONFIG_CPU_V7M)		=-march=armv7-m
+ arch-$(CONFIG_CPU_V7R)		=-march=armv7-r
+ arch-$(CONFIG_ARM64)		=-march=armv8-a
+@@ -40,7 +40,7 @@ tune-$(CONFIG_CPU_SA1100)	=-mtune=strongarm1100
+ tune-$(CONFIG_CPU_PXA)		=-mcpu=xscale
+ tune-$(CONFIG_CPU_ARM1136)	=
+ tune-$(CONFIG_CPU_ARM1176)	=
+-tune-$(CONFIG_CPU_V7A)		=
++tune-$(CONFIG_CPU_V7A)		=-mtune=generic-armv7-a
+ tune-$(CONFIG_CPU_V7R)		=
+ tune-$(CONFIG_ARM64)		=
+ 
+diff --git a/arch/arm/config.mk b/arch/arm/config.mk
+index 8313fc8e771..32e6ebe99cb 100644
+--- a/arch/arm/config.mk
++++ b/arch/arm/config.mk
+@@ -122,7 +122,7 @@ endif
+ 
+ ifneq ($(CONFIG_SPL_BUILD),y)
+ # Check that only R_ARM_RELATIVE relocations are generated.
+-ALL-y += checkarmreloc
++#ALL-y += checkarmreloc
+ # The movt / movw can hardcode 16 bit parts of the addresses in the
+ # instruction. Relocation is not supported for that case, so disable
+ # such usage by requiring word relocations.
+diff --git a/arch/arm/lib/bootm.c b/arch/arm/lib/bootm.c
+index 8d3311d9dd9..6730e7a4119 100644
+--- a/arch/arm/lib/bootm.c
++++ b/arch/arm/lib/bootm.c
+@@ -219,12 +219,14 @@ static void setup_end_tag(bd_t *bd)
+ __weak void setup_board_tags(struct tag **in_params) {}
+ 
+ #ifdef CONFIG_ARM64
++#ifndef CONFIG_ARCH_SUNXI
+ static void do_nonsec_virt_switch(void)
+ {
+ 	smp_kick_all_cpus();
+ 	dcache_disable();	/* flush cache before swtiching to EL2 */
+ }
+ #endif
++#endif
+ 
+ int sunxi_drm_kernel_para_flush(void);
+ 
+diff --git a/arch/arm/lib/stack.c b/arch/arm/lib/stack.c
+index aa82eec7c75..2b1be4e9074 100644
+--- a/arch/arm/lib/stack.c
++++ b/arch/arm/lib/stack.c
+@@ -24,7 +24,7 @@ int arch_reserve_stacks(void)
+ 	gd->irq_sp = gd->start_addr_sp;
+ #ifdef CONFIG_ARCH_SUNXI
+ 	gd->start_addr_sp -= (SUNXI_STACKSIZE_IRQ + SUNXI_STACKSIZE_FIQ);
+-	debug("Reserving %zu Bytes for IRQ stack at: %08lx\n",
++	debug("Reserving %u Bytes for IRQ stack at: %08lx\n",
+ 			SUNXI_STACKSIZE_IRQ + SUNXI_STACKSIZE_FIQ, gd->start_addr_sp);
+ 
+ 	/* 8-byte alignment for ARM ABI compliance */
+diff --git a/arch/arm/mach-sunxi/Kconfig b/arch/arm/mach-sunxi/Kconfig
+index 51cbbde6250..e62dd883a5e 100644
+--- a/arch/arm/mach-sunxi/Kconfig
++++ b/arch/arm/mach-sunxi/Kconfig
+@@ -192,6 +192,7 @@ config MACH_SUN60IW2
+ config MACH_SUN55IW3
+ 	bool "sun55i(Allwinner sun55iw3)"
+ 	select SUNXI_ARM64
++	# select ARM64
+ 	select CPU_V7A
+ 	select SUNXI_SECURE
+ 	select SUNXI_GIC_V3
+diff --git a/arch/arm/mach-sunxi/gic_v3.c b/arch/arm/mach-sunxi/gic_v3.c
+index 08ddb71f96b..58a2ec1c3a2 100755
+--- a/arch/arm/mach-sunxi/gic_v3.c
++++ b/arch/arm/mach-sunxi/gic_v3.c
+@@ -197,7 +197,11 @@ void irq_free_handler(int irq)
+ 	enable_interrupts();
+ }
+ 
++#ifdef CONFIG_ARM64
++void do_irq(struct pt_regs *pt_regs, unsigned int esr)
++#else
+ void do_irq(struct pt_regs *pt_regs)
++#endif
+ {
+ 	u32 idnum;
+ 
+diff --git a/board/sunxi/board.c b/board/sunxi/board.c
+index 08ad7bd4822..c95e8435622 100644
+--- a/board/sunxi/board.c
++++ b/board/sunxi/board.c
+@@ -153,7 +153,7 @@ void i2c_init_board(void)
+ #endif
+ #endif
+ }
+-#ifdef CONFIG_ARM
++#if defined(CONFIG_ARM) && !defined(CONFIG_ARM64)
+ void enable_smp(void)
+ {
+    /* SMP status is controlled by bit 6 of the CP15 Aux Ctrl Reg:ACTLR */
+diff --git a/cmd/sunxi_memtest.c b/cmd/sunxi_memtest.c
+index 73b2a2a0477..d7878d94b67 100644
+--- a/cmd/sunxi_memtest.c
++++ b/cmd/sunxi_memtest.c
+@@ -177,11 +177,11 @@ static int do_memtester(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv
+     wantmb = (wantbytes_orig >> 20);
+ 
+     if (wantmb > maxmb) {
+-        printf("This system can only address %d MB.\n",  maxmb);
++        printf("This system can only address %zd MB.\n",  maxmb);
+         return -1;
+     }
+     if (wantbytes < pagesize) {
+-        printf("bytes %d < pagesize %d -- memory argument too large?\n",
++        printf("bytes %zd < pagesize %zd -- memory argument too large?\n",
+                 wantbytes, pagesize);
+         return -1;
+     }
+@@ -191,7 +191,7 @@ static int do_memtester(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv
+     loops = simple_strtoul(argv[2], NULL, 10);
+     
+     
+-    printf("want %uMB (%u bytes)\n", wantmb, wantbytes);
++    printf("want %zuMB (%zu bytes)\n", wantmb, wantbytes);
+     buf = NULL;
+ 
+ 
+diff --git a/configs/sun55iw3p1_t527_defconfig b/configs/sun55iw3p1_t527_defconfig
+index af7cbba8a56..e8d4bbdebd1 100644
+--- a/configs/sun55iw3p1_t527_defconfig
++++ b/configs/sun55iw3p1_t527_defconfig
+@@ -1,10 +1,12 @@
+ CONFIG_ARM=y
+ CONFIG_ARCH_SUNXI=y
+ CONFIG_MACH_SUN55IW3=y
++CONFIG_SPL=y
+ CONFIG_SUNXI_GPIO_V2=y
+ CONFIG_SUNXI_PHY_KEY=y
+ #CONFIG_AXP_GPIO=y
+ CONFIG_DEFAULT_DEVICE_TREE="sun55iw3p1-soc-system"
++CONFIG_DEFAULT_FDT_FILE="allwinner/sun55i-t527-orangepi-4a.dtb"
+ # CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
+ CONFIG_CONSOLE_MUX=y
+ #CONFIG_OF_BOARD=y
+diff --git a/include/command.h b/include/command.h
+index 04cd1e745cb..1876d410f51 100644
+--- a/include/command.h
++++ b/include/command.h
+@@ -140,7 +140,7 @@ enum command_ret_t {
+  *			number of ticks the command took to complete.
+  * @return 0 if the command succeeded, 1 if it failed
+  */
+-int cmd_process(int flag, int argc, char * const argv[],
++enum command_ret_t cmd_process(int flag, int argc, char * const argv[],
+ 			       int *repeatable, unsigned long *ticks);
+ 
+ void fixup_cmdtable(cmd_tbl_t *cmdtp, int size);
+diff --git a/include/configs/sunxi-common.h b/include/configs/sunxi-common.h
+index 71e0fbd2760..432e37936a4 100644
+--- a/include/configs/sunxi-common.h
++++ b/include/configs/sunxi-common.h
+@@ -54,7 +54,10 @@
+ 
+ #ifdef CONFIG_ARM64
+ #define CONFIG_BUILD_TARGET "u-boot.itb"
+-#define CONFIG_SYS_BOOTM_LEN		(32 << 20)
++#ifdef CONFIG_SYS_BOOTM_LEN
++# undef CONFIG_SYS_BOOTM_LEN
++# define CONFIG_SYS_BOOTM_LEN		(32 << 20)
++#endif
+ #endif
+ 
+ /* Serial & console */
+diff --git a/include/linux/const.h b/include/linux/const.h
+index 5253d5f1c45..d21857ffc7f 100644
+--- a/include/linux/const.h
++++ b/include/linux/const.h
+@@ -18,7 +18,10 @@
+ #define _AT(T, X)	X
+ #else
+ #define __AC(X, Y)	(X##Y)
+-#define _AC(X, Y)	__AC(X, Y)
++#ifdef _AC
++# undef _AC
++# define _AC(X, Y)	__AC(X, Y)
++#endif
+ #define _AT(T, X)	((T)(X))
+ #endif
+ 
+@@ -28,7 +31,10 @@
+ #define _BITUL(x)	(_UL(1) << (x))
+ #define _BITULL(x)	(_ULL(1) << (x))
+ 
+-#define UL(x)		(_UL(x))
++#ifdef UL
++# undef UL
++# define UL(x)		(_UL(x))
++#endif
+ #define ULL(x)		(_ULL(x))
+ 
+ #endif /* _LINUX_CONST_H */
