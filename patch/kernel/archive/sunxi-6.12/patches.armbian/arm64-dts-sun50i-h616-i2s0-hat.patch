@@ -1,0 +1,88 @@
+diff --git a/arch/arm64/boot/dts/allwinner/overlay/Makefile b/arch/arm64/boot/dts/allwinner/overlay/Makefile
+index 3e87d21c9d141..0008f457f4c93 100644
+--- a/arch/arm64/boot/dts/allwinner/overlay/Makefile
++++ b/arch/arm64/boot/dts/allwinner/overlay/Makefile
+@@ -85,7 +85,8 @@ dtb-$(CONFIG_ARCH_SUNXI) += \
+ 	sun50i-h616-tft35_spi.dtbo \
+ 	sun50i-h616-mcp2515.dtbo \
+ 	sun50i-h616-ws2812.dtbo \
+-	sun50i-h616-light.dtbo
++	sun50i-h616-light.dtbo \
++	sun50i-h616-i2s0-hat.dtbo
+ 
+ scr-$(CONFIG_ARCH_SUNXI) += \
+ 	sun50i-a64-fixup.scr \
+diff --git a/arch/arm64/boot/dts/allwinner/overlay/sun50i-h616-i2s0-hat.dtso b/arch/arm64/boot/dts/allwinner/overlay/sun50i-h616-i2s0-hat.dtso
+new file mode 100644
+index 0000000000000..273221a3b5212
+--- /dev/null
++++ b/arch/arm64/boot/dts/allwinner/overlay/sun50i-h616-i2s0-hat.dtso
+@@ -0,0 +1,68 @@
++/dts-v1/;
++/plugin/;
++/ {
++	compatible = "allwinner,sun50i-h616";
++	fragment@0 {
++		target = <&pio>;
++		__overlay__ {
++			ahub_daudio0_pins_a: ahub_daudio0@0 {
++				pins = "PI0", "PI1", "PI2";
++				function = "i2s0";
++				drive-strength = <0x14>;
++				bias-disable;
++			};
++			ahub_daudio0_pins_b: ahub_daudio0@1 {
++				pins = "PI3";
++				function = "i2s0_dout0";
++				drive-strength = <0x14>;
++				bias-disable;
++			};
++			ahub_daudio0_pins_c: ahub_daudio0@2 {
++				pins = "PI4";
++				function = "i2s0_din0";
++				drive-strength = <0x14>;
++				bias-disable;
++			};
++			ahub_daudio0_pins_d: ahub_daudio0_sleep {
++				pins = "PI0", "PI1", "PI2", "PI3", "PI4";
++				function = "gpio_in";
++				drive-strength = <0x14>;
++				bias-disable;
++			};
++		};
++	};
++	fragment@1 {
++		target-path = "/soc";
++		__overlay__ {
++			ahub0_plat: ahub0_plat {
++				#sound-dai-cells = <0>;
++				compatible = "allwinner,sunxi-snd-plat-ahub";
++				apb_num = <0>; /* for dma port 3 */
++				dmas = <&dma 3>, <&dma 3>;
++				dma-names = "tx", "rx";
++				playback_cma = <128>;
++				capture_cma = <128>;
++				tx_fifo_size = <128>;
++				rx_fifo_size = <128>;
++				pinctrl-names = "default", "sleep";
++				pinctrl_used;
++				pinctrl-0 = <&ahub_daudio0_pins_a>, <&ahub_daudio0_pins_b>, <&ahub_daudio0_pins_c>;
++				pinctrl-1 = <&ahub_daudio0_pins_d>;
++				status = "okay";
++			};
++			ahub0_mach: ahub0_mach {
++				compatible = "allwinner,sunxi-snd-mach";
++				soundcard-mach,name = "ahubi2s0";
++				soundcard-mach,format = "i2s";
++				status = "okay";
++
++				soundcard-mach,cpu {
++					sound-dai = <&ahub0_plat>;
++				};
++
++				soundcard-mach,codec {
++				};
++			};
++		};
++	};
++};
