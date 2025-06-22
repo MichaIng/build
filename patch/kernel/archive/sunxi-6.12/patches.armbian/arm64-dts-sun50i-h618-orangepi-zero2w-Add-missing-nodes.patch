@@ -5,8 +5,8 @@ Subject: arm64: dts: sun50i-h618-orangepi-zero2w: Add missing nodes
 
 ---
  .../arm64/boot/dts/allwinner/sun50i-h616.dtsi |  25 +-
- .../allwinner/sun50i-h618-orangepi-zero2w.dts | 628 ++++++++++++++++--
- 2 files changed, 586 insertions(+), 67 deletions(-)
+ .../allwinner/sun50i-h618-orangepi-zero2w.dts | 645 ++++++++++++++++--
+ 2 files changed, 603 insertions(+), 67 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
 index 5d35e71e230b..f5674ffced07 100644
@@ -769,6 +769,23 @@ index 6a4f0da97233..5a550d904534 100644
 +		pins = "PA12";
 +		function = "pwm5";
 +	};
++};
++
++&codec {
++	allwinner,audio-routing = "Line Out", "LINEOUT";
++	status = "okay";
++};
++
++&ahub_dam_plat {
++	status = "okay";
++};
++
++&ahub1_plat {
++	status = "okay";
++};
++
++&ahub1_mach {
++	status = "okay";
 +};
 -- 
 2.35.3
