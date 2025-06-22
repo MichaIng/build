@@ -47,6 +47,102 @@ function armbian_kernel_config__extrawifi_enable_wifi_opts_80211() {
 	fi
 }
 
+# Aligns the Realtek WiFi drivers per kernel family.
+#
+# Mainline RTW88/RTW89 drivers are preferred over the out-of-tree drivers Armbian patches into the tree
+# (see drivers_network.sh). Those with a mainline counterpart are disabled explicitly. Exceptions:
+#   RTL8723DS: the out-of-tree driver performs better and obtains the MAC address from hardware in more cases.
+#   RTL8723BS: likewise for the staging driver. Linux 7.4 added RTW88_8723BS and removed the staging driver,
+#              hence RTW88_8723BS is enabled from Linux 7.4 on.
+# Out-of-tree drivers without RTW88/RTW89 counterpart remain enabled.
+#
+# Keys are set regardless of whether the driver exists on the respective kernel version (Armbian backports RTW88 to
+# older kernels, new drivers get added upstream): unknown keys and those with unmet dependencies (e.g. PCI) are
+# dropped by olddefconfig. This way the lists do not need to be maintained for every kernel version.
+#
+# Families:
+#   meson64, rockchip64, sunxi64:      used for many different SBCs, hence all USB, SDIO and PCIe drivers are enabled
+#   sunxi:                             likewise, but without PCIe drivers, as the Allwinner H3 has no PCIe
+#   rockchip, meson, meson-s7d, cix-p1: used for a single SBC each without onboard WiFi, hence USB drivers only.
+#                                      Exception: RTL8723BS on the ASUS Tinker Board (rockchip).
+function armbian_kernel_config__realtek_wifi() {
+	declare sdio=no pcie=no
+	case "${LINUXFAMILY}" in
+		meson64 | rockchip64 | sunxi64) sdio=yes pcie=yes ;;
+		sunxi) sdio=yes ;;
+		rockchip | meson | meson-s7d | cix-p1) ;;
+		*) return 0 ;;
+	esac
+
+	# Parent menus, rtl8xxxu, debug options
+	opts_y+=("WLAN_VENDOR_REALTEK")
+	opts_m+=("RTL_CARDS" "RTL8XXXU" "RTW88" "RTW89")
+	opts_n+=("RTLWIFI_DEBUG" "RTW88_DEBUG" "RTW88_DEBUGFS" "RTW89_DEBUGMSG" "RTW89_DEBUGFS")
+
+	# Out-of-tree drivers with mainline counterpart
+	opts_n+=(
+		"88XXAU"    # RTW88_8812AU, RTW88_8814AU, RTW88_8821AU
+		"RTL8192EU" # RTL8XXXU, same USB IDs
+		"RTL8723CS" # RTW88_8723CS
+		"RTL8723DU" # RTW88_8723DU
+		"RTL8821CU" # RTW88_8821CU
+		"RTL8822BU" # RTW88_8822BU
+		"RTL8822CS" # RTW88_8822CS
+	)
+	# RTL8723DS: out-of-tree driver preferred
+	opts_n+=("RTW88_8723DS")
+
+	# USB
+	opts_m+=(
+		"RTL8187"                                                       # rtl818x
+		"RTL8192CU" "RTL8192DU"                                         # rtlwifi
+		"RTW88_8723DU" "RTW88_8812AU" "RTW88_8814AU" "RTW88_8821AU"     # RTW88
+		"RTW88_8821CU" "RTW88_8822BU" "RTW88_8822CU"                    # RTW88
+		"RTW89_8851BU" "RTW89_8852AU" "RTW89_8852BU" "RTW89_8852CU"     # RTW89
+		"RTW89_8922AU"                                                  # RTW89
+		"RTL8822EU"                                                     # out-of-tree, no mainline counterpart
+	)
+
+	# SDIO
+	declare -a opts_sdio=(
+		"RTW88_8723CS" "RTW88_8821CS" "RTW88_8822BS" "RTW88_8822CS"     # RTW88
+		"RTL8189ES" "RTL8189FS" "RTL8723DS" "RTL8852BS"                 # out-of-tree
+	)
+	if [[ ${sdio} == yes ]]; then
+		opts_m+=("${opts_sdio[@]}")
+	else
+		opts_n+=("${opts_sdio[@]}")
+	fi
+	# RTL8723BS: staging driver preferred, until it was removed with Linux 7.4
+	if [[ ${sdio} == yes || ${LINUXFAMILY} == rockchip ]]; then
+		opts_m+=("RTL8723BS")
+		if linux-version compare "${KERNEL_MAJOR_MINOR}" ge 7.4; then
+			opts_m+=("RTW88_8723BS")
+		else
+			opts_n+=("RTW88_8723BS")
+		fi
+	else
+		opts_n+=("RTL8723BS" "RTW88_8723BS")
+	fi
+
+	# PCIe
+	declare -a opts_pcie=(
+		"RTL8180"                                                       # rtl818x
+		"RTL8188EE" "RTL8192CE" "RTL8192DE" "RTL8192EE" "RTL8192SE"     # rtlwifi
+		"RTL8723AE" "RTL8723BE" "RTL8821AE"                             # rtlwifi
+		"RTL8192E"                                                      # staging
+		"RTW88_8723DE" "RTW88_8814AE" "RTW88_8821CE" "RTW88_8822BE"     # RTW88
+		"RTW88_8822CE"                                                  # RTW88
+		"RTW89_8851BE" "RTW89_8852AE" "RTW89_8852BE" "RTW89_8852BTE"    # RTW89
+		"RTW89_8852CE" "RTW89_8922AE" "RTW89_8922DE"                    # RTW89
+	)
+	if [[ ${pcie} == yes ]]; then
+		opts_m+=("${opts_pcie[@]}")
+	else
+		opts_n+=("${opts_pcie[@]}")
+	fi
+}
+
 # Enables the NETKIT kernel configuration option for kernels 6.7 and above.
 #
 # NETKIT is a new networking stack framework introduced in kernel 6.7 that
