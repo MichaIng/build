@@ -338,19 +338,19 @@ write_uboot_platform() {
 	[[ $(type -t run_host_command_logged) == function ]] && logging_prelude="run_host_command_logged"
 
 	if [ -f $1/u-boot-rockchip.bin ]; then #"$BOOT_SCENARIO" == "binman" or "binman-atf-mainline"
-		${logging_prelude} dd if=$1/u-boot-rockchip.bin of=$2 bs=32k seek=1 conv=notrunc status=none
+		${logging_prelude} dd if=$1/u-boot-rockchip.bin of=$2 bs=32k seek=1 conv=notrunc,fsync status=progress
 	elif [ -f $1/rksd_loader.img ]; then # legacy rk3399 loader
-		${logging_prelude} dd if=$1/rksd_loader.img of=$2 seek=64 conv=notrunc status=none
+		${logging_prelude} dd if=$1/rksd_loader.img of=$2 seek=64 conv=notrunc,fsync status=progress
 	elif [[ -f $1/u-boot.itb ]]; then # $BOOT_SCENARIO "blobless" or "tpl-spl-blob"
-		${logging_prelude} dd if=$1/idbloader.img of=$2 seek=64 conv=notrunc status=none
-		${logging_prelude} dd if=$1/u-boot.itb of=$2 seek=16384 conv=notrunc status=none
+		${logging_prelude} dd if=$1/idbloader.img of=$2 seek=64 conv=notrunc,fsync status=progress
+		${logging_prelude} dd if=$1/u-boot.itb of=$2 seek=16384 conv=notrunc,fsync status=progress
 	elif [[ -f $1/uboot.img ]]; then # $BOOT_SCENARIO == "only-blobs"
-		${logging_prelude} dd if=$1/idbloader.bin of=$2 seek=64 conv=notrunc status=none
-		${logging_prelude} dd if=$1/uboot.img of=$2 seek=16384 conv=notrunc status=none
-		${logging_prelude} dd if=$1/trust.bin of=$2 seek=24576 conv=notrunc status=none
+		${logging_prelude} dd if=$1/idbloader.bin of=$2 seek=64 conv=notrunc,fsync status=progress
+		${logging_prelude} dd if=$1/uboot.img of=$2 seek=16384 conv=notrunc,fsync status=progress
+		${logging_prelude} dd if=$1/trust.bin of=$2 seek=24576 conv=notrunc,fsync status=progress
 	else
 		echo "Unsupported u-boot processing configuration!"
-		exit 1
+		return 1
 	fi
 }
 
@@ -375,7 +375,7 @@ write_uboot_platform_mtd() {
 	FILES=$(find "$1" -maxdepth 1 -type f \( -name "rkspi_loader*.img" -o -name "u-boot-rockchip-spi*.bin" \))
 	if [ -z "$FILES" ]; then
 		echo "No SPI image found."
-		exit 1
+		return 1
 	fi
 
 	MENU_ITEMS=()
@@ -385,7 +385,7 @@ write_uboot_platform_mtd() {
 	# Read the files into an array
 	while IFS= read -r file; do
 		filename=$(basename "$file")
-		MENU_ITEMS+=("$i" "$filename" "")
+		MENU_ITEMS+=("$i" "$filename")
 		FILE_ARRAY+=("$file")
 		((i++))
 	done <<< "$FILES"
@@ -393,7 +393,7 @@ write_uboot_platform_mtd() {
 	if [[ ! -t 1 || $i -eq 2 ]]; then
 		first_file="${FILE_ARRAY[0]}"
 		if [[ "$first_file" == *rkspi_loader*.img ]]; then
-			dd if="$first_file" of="$2" conv=notrunc status=none > /dev/null 2>&1
+			dd if="$first_file" of="$2" conv=notrunc,fsync status=progress
 		else
 			flashcp -v -p "$first_file" /dev/mtd0
 		fi
@@ -403,19 +403,19 @@ write_uboot_platform_mtd() {
 	[[ -f /etc/armbian-release ]] && source /etc/armbian-release
 	backtitle="Armbian for $BOARD_NAME install script, https://www.armbian.com"
 
-	CHOICE=$(dialog --no-collapse --title "armbian-install" --backtitle "$backtitle" --radiolist "Choose SPI image:" 0 56 4 "${MENU_ITEMS[@]}" 3>&1 1>&2 2>&3)
+	CHOICE=$(whiptail --title "armbian-install" --backtitle "$backtitle" --menu "Choose SPI image:" 0 56 4 "${MENU_ITEMS[@]}" 3>&1 1>&2 2>&3)
 
 	if [ $? -eq 0 ]; then
 		idx=$((CHOICE - 1))
 		chosen_file="${FILE_ARRAY[$idx]}"
 		if [[ "$chosen_file" == *rkspi_loader*.img ]]; then
-			dd if="$chosen_file" of="$2" conv=notrunc status=none > /dev/null 2>&1
+			dd if="$chosen_file" of="$2" conv=notrunc,fsync status=progress
 		else
 			flashcp -v -p "$chosen_file" /dev/mtd0
 		fi
 	else
 		echo "No SPI image chosen."
-		exit 1
+		return 1
 	fi
 }
 
