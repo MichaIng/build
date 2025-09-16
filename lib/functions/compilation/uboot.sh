@@ -134,6 +134,11 @@ function compile_uboot_target() {
 		# armbian specifics u-boot settings; configure the version so UART boot logs show exactly what's in there
 		[[ -f .config ]] && sed -i "s/CONFIG_LOCALVERSION=\"\"/CONFIG_LOCALVERSION=\"_armbian-${artifact_version}\"/g" .config
 		[[ -f .config ]] && sed -i 's/CONFIG_LOCALVERSION_AUTO=.*/# CONFIG_LOCALVERSION_AUTO is not set/g' .config
+
+		if [[ -f '.config' ]]; then
+			display_alert "Adding Btrfs support to U-Boot incl. btrsubvol command" "CONFIG_CMD_BTRFS=y for ${target}" 'info'
+			grep -q 'CONFIG_CMD_BTRFS=' .config && run_host_command_logged sed -i '/CONFIG_CMD_BTRFS=/c\CONFIG_CMD_BTRFS=y' .config || run_host_command_logged echo 'CONFIG_CMD_BTRFS=y' '>> .config'
+		fi
 	else
 		display_alert "scripts/config found" "u-boot ${version} $BOOTCONFIG ${target_make}" "debug"
 
@@ -158,6 +163,9 @@ function compile_uboot_target() {
 		# Include Armbian version so UART bootlogs are drastically more useful
 		run_host_command_logged ./scripts/config --disable "LOCALVERSION_AUTO"
 		run_host_command_logged ./scripts/config --set-str "LOCALVERSION" "_armbian-${artifact_version}" # crazy quotes!
+
+		display_alert "Adding U-Boot Btrfs support incl. btrsubvol command" "CONFIG_CMD_BTRFS=y for ${target}" 'info'
+		run_host_command_logged scripts/config --enable CONFIG_CMD_BTRFS
 	fi
 
 	if [[ "${UBOOT_DEBUGGING}" == "yes" ]]; then
