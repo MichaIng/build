@@ -22,6 +22,7 @@
 
 	aliases {
 		ethernet0 = &gmac1;
+		ethernet1 = &r8169;
 		mmc0 = &sdhci;
 		mmc1 = &sdmmc0;
 	};
