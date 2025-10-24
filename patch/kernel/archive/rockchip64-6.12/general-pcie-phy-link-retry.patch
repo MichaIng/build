@@ -1,0 +1,13 @@
+diff --git a/drivers/pci/controller/dwc/pcie-dw-rockchip.c b/drivers/pci/controller/dwc/pcie-dw-rockchip.c
+index 6b113a1212a92..bfd066f8f3898 100644
+--- a/drivers/pci/controller/dwc/pcie-dw-rockchip.c
++++ b/drivers/pci/controller/dwc/pcie-dw-rockchip.c
+@@ -537,6 +537,8 @@ static int rockchip_pcie_probe(struct platform_device *pdev)
+ 					     "failed to enable vpcie3v3 regulator\n");
+ 	}
+ 
++	msleep(1000);
++
+ 	ret = rockchip_pcie_phy_init(rockchip);
+ 	if (ret)
+ 		goto disable_regulator;
