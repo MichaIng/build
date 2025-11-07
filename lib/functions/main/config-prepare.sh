@@ -377,8 +377,8 @@ function fix_userspace_packages_release_and_distro() {
 
 	# Debian: no need for this package in the rootfs, as it provides add-apt-repository which is not used on our Debian builds
 	if [[ "${DISTRIBUTION}" == "Debian" ]]; then
-		display_alert "Not-installing software-properties-common" "For distro '${DISTRIBUTION}' release '${RELEASE}'" "warn"
-		remove_packages "software-properties-common" "software-properties-gtk" "software-properties-common"
+		display_alert "Not-installing software-properties-common" "For distro '${DISTRIBUTION}'" "debug"
+		remove_packages "software-properties-common" "software-properties-gtk"
 	fi
 }
 
