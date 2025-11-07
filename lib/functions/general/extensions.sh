@@ -594,7 +594,7 @@ function enable_extensions_with_hostdeps_builtin_and_user() {
 			mapfile -t ext_list_dir < <(find "${ext_dir}" -maxdepth 2 -type f -name "*.sh" -print0 | xargs -0 -r grep -l "${grep_args[@]}" 2> /dev/null || true)
 			display_alert "Extension search result" "Found ${#ext_list_dir[@]} extensions in \"${ext_dir}\"" ""
 			extension_list+=("${ext_list_dir[@]}")
-		else
+		elif [[ "${ext_dir}" != "${USERPATCHES_PATH}/extensions" ]]; then
 			display_alert "Extension search" "Directory does not exist: \"${ext_dir}\"" "wrn"
 		fi
 	done
