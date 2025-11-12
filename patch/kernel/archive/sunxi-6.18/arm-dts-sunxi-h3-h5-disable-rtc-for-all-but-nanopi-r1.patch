@@ -1,0 +1,27 @@
+diff --git a/arch/arm/boot/dts/allwinner/sun8i-h3-nanopi-r1.dts b/arch/arm/boot/dts/allwinner/sun8i-h3-nanopi-r1.dts
+index 870649760f707..a7566b1e2ff9f 100644
+--- a/arch/arm/boot/dts/allwinner/sun8i-h3-nanopi-r1.dts
++++ b/arch/arm/boot/dts/allwinner/sun8i-h3-nanopi-r1.dts
+@@ -133,6 +133,10 @@ &reg_usb0_vbus {
+ 	status = "okay";
+ };
+ 
++&rtc {
++	status = "okay";
++};
++
+ &uart1 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart1_pins>;
+diff --git a/arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi b/arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi
+index 7df60515a9032..dfa3d56e0b16e 100644
+--- a/arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi
++++ b/arch/arm/boot/dts/allwinner/sunxi-h3-h5.dtsi
+@@ -870,6 +870,7 @@ rtc: rtc@1f00000 {
+ 			clock-output-names = "osc32k", "osc32k-out", "iosc";
+ 			clocks = <&osc32k>;
+ 			#clock-cells = <1>;
++			status = "disabled";
+ 		};
+ 
+ 		r_intc: interrupt-controller@1f00c00 {
