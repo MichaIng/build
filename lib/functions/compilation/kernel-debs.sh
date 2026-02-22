@@ -301,7 +301,6 @@ function kernel_package_callback_linux_image() {
 			# @TODO: only if u-boot, only for postinst. Gotta find a hook scheme for these...
 			if [[ "${script}" == "postinst" ]]; then
 				cat <<- HOOK_FOR_LINK_TO_LAST_INSTALLED_KERNEL # image_name="${NAME_KERNEL}", above
-					touch /boot/.next
 					if is_boot_dev_vfat; then
 						echo "Armbian: FAT32 /boot: move last-installed kernel to '$image_name'..."
 						mv -v /${installed_image_path} /boot/${image_name}
