@@ -50,6 +50,9 @@ function compile_firmware() {
 	# Armbian firmware; this overwrites anything in the mainline firmware repo (if that was included, in the full version only)
 	run_host_command_logged git -C "${SRC}/cache/sources/armbian-firmware-git" archive --format=tar "${armbian_firmware_git_sha1}" "|" tar -C "${fw_temp_dir}/${fw_dir}/lib/firmware/" -xf -
 
+	# Remove unused firmware, mostly for certain laptops, smartphones, and handhelds
+	run_host_command_logged rm -R "${fw_temp_dir}/${fw_dir}"/lib/firmware/{cirrus,novatek,qcom}
+
 	# Show the size of the firmware directory in a tree if debugging
 	if [[ "${SHOW_DEBUG}" == "yes" ]]; then
 		run_host_command_logged tree -C --du -h -L 1 "${fw_temp_dir}/${fw_dir}"/lib/firmware "|| true" # do not fail
