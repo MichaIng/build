@@ -50,6 +50,9 @@ function compile_firmware() {
 	# Armbian firmware; this overwrites anything in the mainline firmware repo (if that was included, in the full version only)
 	run_host_command_logged git -C "${SRC}/cache/sources/armbian-firmware-git" archive --format=tar "${armbian_firmware_git_sha1}" "|" tar -C "${fw_temp_dir}/${fw_dir}/lib/firmware/" -xf -
 
+	# Remove huge AYN Odin 2 firmware, 170 MiB for a handheld device we do not support
+	run_host_command_logged rm -R "${fw_temp_dir}/${fw_dir}"/lib/firmware/qcom/sm8550
+
 	# Show the size of the firmware directory in a tree if debugging
 	if [[ "${SHOW_DEBUG}" == "yes" ]]; then
 		run_host_command_logged tree -C --du -h -L 1 "${fw_temp_dir}/${fw_dir}"/lib/firmware "|| true" # do not fail
