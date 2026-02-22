@@ -597,6 +597,23 @@ function armbian_kernel_config__enable_ntsync() {
 	fi
 }
 
+# Enforce xz-compressed kernel modules
+function armbian_kernel_config__enforce_modules_xz_compression() {
+	opts_n+=('MODULE_COMPRESS_NONE')	# main switch for Linux >=6.0 and <6.12
+	opts_y+=('MODULE_COMPRESS')		# main switch for Linux <6.0 and >=6.12
+	opts_n+=('MODULE_COMPRESS_GZIP')
+	opts_n+=('MODULE_COMPRESS_ZSTD')
+	opts_y+=('MODULE_COMPRESS_XZ')
+	opts_y+=('MODULE_COMPRESS_ALL')		# for Linux >=6.12 to compress at "make modules_install"
+	# in-kernel decompression to not rely on userland doing this
+	# Fails on Rockchip vendor kernel with error 6/ENXIO, despite CONFIG_XZ_DEC CONFIG_XZ_DEC_* CONFIG_DECOMPRESS_XZ all on
+	if [[ ${BRANCH} == 'vendor' ]]; then
+		opts_n+=('MODULE_DECOMPRESS')
+	else
+		opts_y+=('MODULE_DECOMPRESS')
+	fi
+}
+
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #                           Kernel Configuration Helpers
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
