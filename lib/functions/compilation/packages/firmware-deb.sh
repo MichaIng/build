@@ -50,6 +50,14 @@ function compile_firmware() {
 	# Armbian firmware; this overwrites anything in the mainline firmware repo (if that was included, in the full version only)
 	run_host_command_logged git -C "${SRC}/cache/sources/armbian-firmware-git" archive --format=tar "${armbian_firmware_git_sha1}" "|" tar -C "${fw_temp_dir}/${fw_dir}/lib/firmware/" -xf -
 
+	# Deduplicate sm8550/ayn firmware to save ~150 MiB disk space
+	cd "${fw_temp_dir}/${fw_dir}"/lib/firmware/qcom/sm8550/ayn || exit_with_error "can't change directory"
+	for i in * {odin2,odin2mini,thor}/*
+	do
+		[[ -d $i ]] && continue
+		diff "$i" "odin2portal/${i#/}" && run_host_command_logged ln -sf "$i" "odin2portal/${i#/}"
+	done
+
 	# Show the size of the firmware directory in a tree if debugging
 	if [[ "${SHOW_DEBUG}" == "yes" ]]; then
 		run_host_command_logged tree -C --du -h -L 1 "${fw_temp_dir}/${fw_dir}"/lib/firmware "|| true" # do not fail
