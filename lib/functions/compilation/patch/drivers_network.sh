@@ -612,14 +612,18 @@ driver_uwe5622() {
 
 		if linux-version compare "${version}" ge 6.17; then
                         process_patch_file "${SRC}/patch/misc/wireless-uwe5622/uwe5622-v6.17.patch" "applying"
-        fi
+		fi
 
 		if linux-version compare "${version}" ge 6.18; then
                         process_patch_file "${SRC}/patch/misc/wireless-uwe5622/uwe5622-v6.18.patch" "applying"
-        fi
+		fi
 
 		if linux-version compare "${version}" ge 6.19; then
-			process_patch_file "${SRC}/patch/misc/wireless-uwe5622/uwe5622-v6.19.patch" "applying"
+			if [[ "$LINUXFAMILY" == sun* ]]; then
+				process_patch_file "${SRC}/patch/misc/wireless-uwe5622/uwe5622-v6.19-sunxi.patch" "applying"
+			else
+				process_patch_file "${SRC}/patch/misc/wireless-uwe5622/uwe5622-v6.19.patch" "applying"
+			fi
 		fi
 
 	fi
