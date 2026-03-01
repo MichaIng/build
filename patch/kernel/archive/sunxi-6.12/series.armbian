@@ -101,7 +101,6 @@
 	patches.armbian/arm64-dts-sun50i-h5-orangepi-pc2-add-spi-flash.patch
 	patches.armbian/arm64-dts-sun50i-h5-orangepi-prime-add-regulator.patch
 	patches.armbian/arm64-dts-sun50i-h5-orangepi-zero-plus-add-regulator.patch
-	patches.armbian/arm64-dts-sun50i-h6.dtsi-improve-thermals.patch
 	patches.armbian/arm64-dts-sun50i-h6-orangepi-3-delete-node-spi0.patch
 	patches.armbian/arm64-dts-sun50i-h6-orangepi-lite2-spi0-usb3phy-dwc3-enable.patch
 	patches.armbian/arm64-dts-sun50i-h6-pine-h64-add-wifi-rtl8723cs.patch
