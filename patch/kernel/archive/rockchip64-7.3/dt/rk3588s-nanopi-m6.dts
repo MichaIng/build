@@ -257,6 +257,7 @@
 		     &gmac1_rgmii_clk
 		     &gmac1_rgmii_bus>;
 	pinctrl-names = "default";
+	rx_delay = <0x00>;
 	tx_delay = <0x42>;
 	status = "okay";
 };
