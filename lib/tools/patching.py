@@ -444,7 +444,7 @@ from rich.table import Table
 from rich.syntax import Syntax
 
 # console width is COLUMNS env var minus 12, or just 160 if GITHUB_ACTIONS env is not empty
-console_width = (int(os.environ.get("COLUMNS", 160)) - 12) if os.environ.get("GITHUB_ACTIONS", "") == "" else 160
+console_width = (int(os.environ.get("COLUMNS") or 160) - 12) if os.environ.get("GITHUB_ACTIONS", "") == "" else 160
 console = Console(color_system="standard", width=console_width, highlight=False)
 
 # Use Rich to print a summary of the patches
