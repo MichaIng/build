@@ -1,0 +1,13 @@
+diff --git a/dts/upstream/src/arm64/rockchip/rk356x-base.dtsi b/dts/upstream/src/arm64/rockchip/rk356x-base.dtsi
+index fd2214b6fad..d654f98460e 100644
+--- a/dts/upstream/src/arm64/rockchip/rk356x-base.dtsi
++++ b/dts/upstream/src/arm64/rockchip/rk356x-base.dtsi
+@@ -975,7 +975,7 @@
+ 		power-domains = <&power RK3568_PD_PIPE>;
+ 		ranges = <0x01000000 0x0 0xf4100000 0x0 0xf4100000 0x0 0x00100000>,
+ 			 <0x02000000 0x0 0xf4200000 0x0 0xf4200000 0x0 0x01e00000>,
+-			 <0x03000000 0x0 0x40000000 0x3 0x00000000 0x0 0x40000000>;
++			 <0x03000000 0x3 0x00000000 0x3 0x00000000 0x0 0x40000000>;
+ 		resets = <&cru SRST_PCIE20_POWERUP>;
+ 		reset-names = "pipe";
+ 		#address-cells = <3>;
