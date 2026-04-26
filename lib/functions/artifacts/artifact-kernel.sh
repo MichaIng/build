@@ -262,11 +262,6 @@ function artifact_kernel_prepare_version() {
 		fi
 	fi
 
-	# x86, specially, does not have working dtbs...
-	if [[ "${KERNEL_BUILD_DTBS:-"yes"}" == "yes" ]]; then
-		artifact_map_packages+=(["linux-dtb"]="linux-dtb-${BRANCH}-${LINUXFAMILY}")
-	fi
-
 	artifact_map_packages+=(["linux-libc-dev"]="linux-libc-dev-${BRANCH}-${LINUXFAMILY}")
 
 	# Allow extensions to add more packages to the kernel artifact
@@ -279,8 +274,13 @@ function artifact_kernel_prepare_version() {
 
 	artifact_name="kernel-${LINUXFAMILY}-${BRANCH}" # default name of regular artifact
 
-	# Separate artifact name if we're in DTB-only mode, so stuff doesn't get mixed up later
 	if [[ "${KERNEL_DTB_ONLY}" == "yes" ]]; then
+		# x86, specially, does not have working dtbs...
+		if [[ "${KERNEL_BUILD_DTBS:-"yes"}" == "yes" ]]; then
+			artifact_map_packages+=(["linux-dtb"]="linux-dtb-${BRANCH}-${LINUXFAMILY}")
+		fi
+
+		# Separate artifact name if we're in DTB-only mode, so stuff doesn't get mixed up later
 		artifact_name="kernel-dtb-only-${LINUXFAMILY}-${BRANCH}"
 	fi
 
