@@ -66,19 +66,17 @@ function prepare_kernel_packaging_debs() {
 	# Due to we call `make install` twice, we will get some `.old` files
 	run_host_command_logged rm -rf "${tmp_kernel_install_dirs[INSTALL_PATH]}/*.old" || true
 
-	if [[ "${KERNEL_DTB_ONLY}" != "yes" ]]; then
+	if [[ "${KERNEL_DTB_ONLY}" == "yes" ]]; then
+		# if dtbs present, package those too separately, for u-boot usage.
+		if [[ -d "${tmp_kernel_install_dirs[INSTALL_DTBS_PATH]}" ]]; then
+			display_alert "Packaging linux-dtb" "${LINUXFAMILY} ${LINUXCONFIG}" "info"
+			create_kernel_deb "linux-dtb-${BRANCH}-${LINUXFAMILY}" "${debs_target_dir}" kernel_package_callback_linux_dtb "linux-dtb"
+		fi
+	else
 		# package the linux-image (image, modules, dtbs (if present))
 		display_alert "Packaging linux-image" "${LINUXFAMILY} ${LINUXCONFIG}" "info"
 		create_kernel_deb "linux-image-${BRANCH}-${LINUXFAMILY}" "${debs_target_dir}" kernel_package_callback_linux_image "linux-image"
-	fi
 
-	# if dtbs present, package those too separately, for u-boot usage.
-	if [[ -d "${tmp_kernel_install_dirs[INSTALL_DTBS_PATH]}" ]]; then
-		display_alert "Packaging linux-dtb" "${LINUXFAMILY} ${LINUXCONFIG}" "info"
-		create_kernel_deb "linux-dtb-${BRANCH}-${LINUXFAMILY}" "${debs_target_dir}" kernel_package_callback_linux_dtb "linux-dtb"
-	fi
-
-	if [[ "${KERNEL_DTB_ONLY}" != "yes" ]]; then
 		if [[ "${KERNEL_HAS_WORKING_HEADERS}" == "yes" ]]; then
 			display_alert "Packaging linux-headers" "${LINUXFAMILY} ${LINUXCONFIG}" "info"
 			create_kernel_deb "linux-headers-${BRANCH}-${LINUXFAMILY}" "${debs_target_dir}" kernel_package_callback_linux_headers "linux-headers"
@@ -247,11 +245,15 @@ function kernel_package_callback_linux_image() {
 	fi
 
 	if [[ -d "${tmp_kernel_install_dirs[INSTALL_DTBS_PATH]}" ]]; then
-		# /usr/lib/linux-image-${kernel_version_family} is wanted by u-boot-menu, and other standard Debian/Ubuntu utilities
+		display_alert "DTBs present on kernel output" "DTBs ${package_name}: /boot/dtb-${kernel_version_family}" "debug"
+		run_host_command_logged cp -rp "${tmp_kernel_install_dirs[INSTALL_DTBS_PATH]}" "${package_directory}/boot/dtb-${kernel_version_family}"
 
-		display_alert "DTBs present on kernel output" "DTBs ${package_name}: /usr/lib/linux-image-${kernel_version_family}" "debug"
-		mkdir -p "${package_directory}/usr/lib"
-		run_host_command_logged cp -rp "${tmp_kernel_install_dirs[INSTALL_DTBS_PATH]}" "${package_directory}/usr/lib/linux-image-${kernel_version_family}"
+		# /usr/lib/linux-image-${kernel_version_family} is wanted by u-boot-menu, and other standard Debian/Ubuntu utilities
+		run_host_command_logged mkdir -pv "${package_directory}/usr/lib"
+		run_host_command_logged ln -sTv "../../boot/dtb-${kernel_version_family}" "${package_directory}/usr/lib/linux-image-${kernel_version_family}"
+
+		# Create symlink for old Orange Pi 3B device tree for transition from custom to mainline dtb: https://dietpi.com/forum/t/20689/22
+		[[ -f "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b-v1.1.dtb" && ! -f "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b.dtb" ]] && run_host_command_logged ln -s 'rk3566-orangepi-3b-v1.1.dtb' "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b.dtb"
 	fi
 
 	# Generate a control file
@@ -266,7 +268,9 @@ function kernel_package_callback_linux_image() {
 		Section: kernel
 		Priority: optional
 		Depends: initramfs-tools | linux-initramfs-tool
-		Provides: linux-image, linux-image-armbian, armbian-$BRANCH, wireguard-modules
+		Breaks: linux-dtb-${BRANCH}-${LINUXFAMILY}
+		Replaces: linux-dtb-${BRANCH}-${LINUXFAMILY}
+		Provides: linux-image, linux-image-armbian, armbian-$BRANCH, wireguard-modules, linux-dtb, linux-dtb-armbian, linux-dtb-${BRANCH}-${LINUXFAMILY}
 		Description: Armbian Linux $BRANCH kernel image $kernel_version_family
 		 This package contains the Linux kernel, modules and corresponding other files.
 		 ${artifact_version_reason:-"${kernel_version_family}"}
@@ -292,23 +296,53 @@ function kernel_package_callback_linux_image() {
 
 			if [[ "${script}" == "preinst" ]]; then
 				cat <<- HOOK_FOR_REMOVE_VFAT_BOOT_FILES
-					if is_boot_dev_vfat; then
-						rm -f /boot/System.map* /boot/config* /boot/vmlinuz* /boot/$image_name /boot/uImage
+					if [ "\$1" = 'upgrade' ] && [ -n "\$3" ] && is_boot_dev_vfat; then
+						echo "Armbian: FAT32 /boot: removing old files, if present, before unpacking package ..."
+						rm -Rf '/boot/dtb-${kernel_version_family}/'*
+						rm -dfv '/boot/System.map-${kernel_version_family}' '/boot/config-${kernel_version_family}' '/${installed_image_path}' '/boot/dtb-${kernel_version_family}'
 					fi
 				HOOK_FOR_REMOVE_VFAT_BOOT_FILES
 			fi
 
 			# @TODO: only if u-boot, only for postinst. Gotta find a hook scheme for these...
 			if [[ "${script}" == "postinst" ]]; then
-				cat <<- HOOK_FOR_LINK_TO_LAST_INSTALLED_KERNEL # image_name="${NAME_KERNEL}", above
-					if is_boot_dev_vfat; then
-						echo "Armbian: FAT32 /boot: move last-installed kernel to '$image_name'..."
-						mv -v /${installed_image_path} /boot/${image_name}
-					else
-						echo "Armbian: update last-installed kernel symlink to '$image_name'..."
-						ln -sfv $(basename "${installed_image_path}") /boot/$image_name
+				if [[ -d "${tmp_kernel_install_dirs[INSTALL_DTBS_PATH]}" ]]; then
+					cat <<- HOOK_FOR_LINK_TO_LAST_INSTALLED_KERNEL # image_name="${NAME_KERNEL}", above
+						if is_boot_dev_vfat; then
+							echo "Armbian: FAT32 /boot: moving last-installed kernel image and dtbs to '$image_name' and 'dtb' ..."
+							[ ! -f '/${installed_image_path}' ] || mv -v '/${installed_image_path}' '/boot/${image_name}'
+							if [ -d '/boot/dtb-${kernel_version_family}' ]; then
+								rm -Rf /boot/dtb/*
+								rm -dfv /boot/dtb
+								mv -v '/boot/dtb-${kernel_version_family}' /boot/dtb
+							fi
+						else
+							echo "Armbian: symlinking last-installed kernel image and dtbs to '$image_name' and 'dtb' ..."
+							ln -sfTv '$(basename "${installed_image_path}")' '/boot/$image_name'
+							ln -sfTv 'dtb-${kernel_version_family}' /boot/dtb
+						fi
+					HOOK_FOR_LINK_TO_LAST_INSTALLED_KERNEL
+				else
+					cat <<- HOOK_FOR_LINK_TO_LAST_INSTALLED_KERNEL # image_name="${NAME_KERNEL}", above
+						if is_boot_dev_vfat; then
+							echo "Armbian: FAT32 /boot: moving last-installed kernel image to '$image_name' ..."
+							[ ! -f '/${installed_image_path}' ] || mv -v '/${installed_image_path}' '/boot/${image_name}'
+						else
+							echo "Armbian: symlinking last-installed kernel image to '$image_name' ..."
+							ln -sfTv '$(basename "${installed_image_path}")' '/boot/$image_name'
+						fi
+					HOOK_FOR_LINK_TO_LAST_INSTALLED_KERNEL
+				fi
+
+				# /usr/lib/linux-image-* dir with symlink replacement, if the kernel version before iinux-dtb + linux-image merge was the same.
+				# dpkg does not do that automatically! Needed e.g. for frozen vendor-rk35xx and current-meson kernel families.
+				cat <<- HOOK_DTB_DIR_TO_SYMLINK
+					if [ -d '/usr/lib/linux-image-${kernel_version_family}' ] && [ ! -L '/usr/lib/linux-image-${kernel_version_family}' ]; then
+						echo 'Armbian: Replacing /usr/lib/linux-image-${kernel_version_family} with a symlink to /boot/dtb-${kernel_version_family}'
+						rmdir -v '/usr/lib/linux-image-${kernel_version_family}'
+						ln -sfTv '../../boot/dtb-${kernel_version_family}' '/usr/lib/linux-image-${kernel_version_family}'
 					fi
-				HOOK_FOR_LINK_TO_LAST_INSTALLED_KERNEL
+				HOOK_DTB_DIR_TO_SYMLINK
 
 				# Reference: linux-image-6.1.0-7-amd64.postinst from Debian
 				cat <<- HOOK_FOR_DEBIAN_COMPAT_SYMLINK
