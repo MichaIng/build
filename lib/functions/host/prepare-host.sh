@@ -260,7 +260,10 @@ function adaptative_prepare_host_dependencies() {
 		if [[ "${wanted_arch}" == "arm64" || "${wanted_arch}" == "all" ]]; then
 			# gcc-aarch64-linux-gnu: from crossbuild-essential-arm64 (64-bit arm)
 			host_dependencies+=("cross-arm64::gcc-aarch64-linux-gnu")
-			# gcc-arm-linux-gnueabi: necessary for rockchip64 (and maybe other too) ATF compilation (32-bit arm)
+		fi
+
+		if [[ "${wanted_arch}" == "arm64" || "${wanted_arch}" == "all" || "${UBOOT_COMPILER}" == "arm-linux-gnueabi-" ]]; then
+			# gcc-arm-linux-gnueabi: necessary for rockchip64 (and maybe other too) ATF compilation (32-bit arm), and Odroid C1 U-Boot builds
 			host_dependencies+=("cross-armhf::gcc-arm-linux-gnueabi")
 		fi
 
