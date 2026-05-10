@@ -1,0 +1,13 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-radxa-zero-3e.dts b/arch/arm64/boot/dts/rockchip/rk3566-radxa-zero-3e.dts
+index 4a830eb09f0b8..38a2c5addfcd3 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-radxa-zero-3e.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-radxa-zero-3e.dts
+@@ -28,6 +28,8 @@ &gmac1m1_rx_bus2
+ 		     &gmac1m1_rgmii_clk
+ 		     &gmac1m1_rgmii_bus
+ 		     &gmac1m1_clkinout>;
++	tx_delay = <0x47>;
++	rx_delay = <0x27>;
+ 	status = "okay";
+ };
+ 
