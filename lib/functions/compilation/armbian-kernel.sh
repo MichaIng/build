@@ -554,7 +554,7 @@ function armbian_kernel_config__enable_docker_support() {
 	opts_m+=("IPVLAN")           # Enables IPvlan network driver support
 	opts_y+=("INET")             # Enables Internet protocol (IPv4) support
 	opts_y+=("FAIR_GROUP_SCHED") # Enables fair group scheduling support
-	opts_m+=("INET_ESP")         # Enables ESP (Encapsulating Security Payload) for IPv4
+	#opts_m+=("INET_ESP")         # Enables ESP (Encapsulating Security Payload) for IPv4
 	# IPVS (IP Virtual Server) for load balancing
 	opts_y+=("IP_VS_NFCT")      # Enables connection tracking for IPVS (IP Virtual Server)
 	opts_y+=("IP_VS_PROTO_TCP") # Enables TCP protocol support for IPVS
