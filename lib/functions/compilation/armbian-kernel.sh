@@ -643,6 +643,86 @@ function armbian_kernel_config__enable_ceph() {
 	opts_m+=("BLK_DEV_RBD")         # RADOS block device (/dev/rbdX)
 }
 
+# Prints the full Linux version of the kernel being built, in the format used for artifact versioning:
+# "6.12.85", respectively "7.1-rc3" for release candidates. When the .config is in place, it is read from the
+# kernel source Makefile, after Armbian patches have been applied. Otherwise, i.e. when obtaining the version for
+# hashing, from the Makefile at the kernel git ref, if available. Falls back to KERNEL_MAJOR_MINOR, which compares
+# like a kernel without stable updates.
+function armbian_kernel_version_full() {
+	if [[ -f .config && -f Makefile ]]; then
+		declare version patchlevel sublevel extraversion
+		version=$(awk '$1 == "VERSION" { print $3; exit }' Makefile)
+		patchlevel=$(awk '$1 == "PATCHLEVEL" { print $3; exit }' Makefile)
+		sublevel=$(awk '$1 == "SUBLEVEL" { print $3; exit }' Makefile)
+		extraversion=$(awk '$1 == "EXTRAVERSION" { print $3; exit }' Makefile | grep -oE '^-rc[0-9]+' || true)
+		if [[ ${extraversion} ]]; then
+			echo "${version}.${patchlevel}${extraversion}"
+		else
+			echo "${version}.${patchlevel}${sublevel:+.${sublevel}}"
+		fi
+	elif [[ ${KERNEL_SKIP_MAKEFILE_VERSION:-no} != yes && ${GIT_INFO_KERNEL[MAKEFILE_VERSION]:-undetermined} != undetermined ]]; then
+		echo "${GIT_INFO_KERNEL[MAKEFILE_VERSION]}"
+	else
+		echo "${KERNEL_MAJOR_MINOR}"
+	fi
+}
+
+# Returns success if the given Linux version contains an upstream fix: if it is at least the given mainline version,
+# or at least the given stable release of the same major.minor branch. Branches not listed are considered affected.
+# Parameters:
+#   $1  - Linux version to check, e.g. "6.12.85"
+#   $2  - first mainline version with the fix, e.g. "7.0"
+#   $3+ - first stable releases with the fix, e.g. "6.12.85"
+function armbian_kernel_version_has_fix() {
+	declare version="$1" mainline="$2" stable
+	shift 2
+	linux-version compare "${version}" ge "${mainline}" && return 0
+	for stable in "$@"; do
+		[[ ${version} == "${stable%.*}."* ]] && linux-version compare "${version}" ge "${stable}" && return 0
+	done
+	return 1
+}
+
+# Mitigates the page cache write local privilege escalation vulnerabilities Copy Fail, Dirty Frag and Fragnesia
+# on kernels without the upstream fixes, by disabling the affected features. This matters for frozen and vendor
+# kernels. Only the actual Linux version counts, not fixes vendors might have backported into their trees.
+# The affected features are rarely used on SBCs. Fixed versions are taken from the Linux kernel CNA CVE records.
+#   Copy Fail  (CVE-2026-31431): AF_ALG AEAD userspace crypto interface (algif_aead)
+#   Dirty Frag (CVE-2026-43284): IPsec ESP (esp4, esp6)
+#   Dirty Frag (CVE-2026-43500): RxRPC sockets, selected by AFS
+#   Fragnesia  (CVE-2026-46300): bug in skbuff coalescing, exploited through IPsec ESP(-in-TCP), hence the same
+#                                mitigation as for Dirty Frag ESP
+# IPsec ESP for IPv4 is enabled if not affected, as before for Docker (encrypted overlay networks).
+function armbian_kernel_config__mitigate_page_cache_lpe() {
+	declare version
+	version=$(armbian_kernel_version_full)
+
+	if ! armbian_kernel_version_has_fix "${version}" 7.0 5.10.254 5.15.204 6.1.170 6.6.137 6.12.85 6.18.22 6.19.12; then
+		display_alert "Mitigating Copy Fail (CVE-2026-31431)" "Linux ${version}: disabling AF_ALG AEAD" "info"
+		opts_n+=("CRYPTO_USER_API_AEAD")
+	fi
+
+	declare esp_affected=no
+	if ! armbian_kernel_version_has_fix "${version}" 7.1 5.10.255 5.15.206 6.1.172 6.6.138 6.12.87 6.18.28 7.0.5; then
+		display_alert "Mitigating Dirty Frag (CVE-2026-43284)" "Linux ${version}: disabling IPsec ESP" "info"
+		esp_affected=yes
+	fi
+	if ! armbian_kernel_version_has_fix "${version}" 7.1 5.10.257 5.15.208 6.1.174 6.6.141 6.12.91 6.18.33 7.0.10; then
+		display_alert "Mitigating Fragnesia (CVE-2026-46300)" "Linux ${version}: disabling IPsec ESP" "info"
+		esp_affected=yes
+	fi
+	if [[ ${esp_affected} == yes ]]; then
+		opts_n+=("INET_ESP" "INET_ESP_OFFLOAD" "INET_ESPINTCP" "INET6_ESP" "INET6_ESP_OFFLOAD" "INET6_ESPINTCP")
+	else
+		opts_m+=("INET_ESP") # ESP (Encapsulating Security Payload) for IPv4
+	fi
+
+	if ! armbian_kernel_version_has_fix "${version}" 7.1 6.6.140 6.12.88 6.18.29 7.0.6; then
+		display_alert "Mitigating Dirty Frag (CVE-2026-43500)" "Linux ${version}: disabling RxRPC and AFS" "info"
+		opts_n+=("AF_RXRPC" "AFS_FS")
+	fi
+}
+
 # Enables Docker support by configuring a comprehensive set of kernel options required for Docker functionality.
 #   sets a wide range of kernel configuration options necessary for Docker, including support for
 #   control groups (cgroups), networking, security, and various netfilter
@@ -686,7 +766,7 @@ function armbian_kernel_config__enable_docker_support() {
 	opts_m+=("IPVLAN")           # Enables IPvlan network driver support
 	opts_y+=("INET")             # Enables Internet protocol (IPv4) support
 	opts_y+=("FAIR_GROUP_SCHED") # Enables fair group scheduling support
-	opts_m+=("INET_ESP")         # Enables ESP (Encapsulating Security Payload) for IPv4
+	# INET_ESP: see armbian_kernel_config__mitigate_page_cache_lpe
 	# IPVS (IP Virtual Server) for load balancing
 	opts_y+=("IP_VS_NFCT")      # Enables connection tracking for IPVS (IP Virtual Server)
 	opts_y+=("IP_VS_PROTO_TCP") # Enables TCP protocol support for IPVS
