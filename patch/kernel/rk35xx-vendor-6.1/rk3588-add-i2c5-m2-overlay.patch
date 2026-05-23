@@ -1,0 +1,25 @@
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/Makefile b/arch/arm64/boot/dts/rockchip/overlay/Makefile
+index c52c5080a0652..32904910ee9d8 100644
+--- a/arch/arm64/boot/dts/rockchip/overlay/Makefile
++++ b/arch/arm64/boot/dts/rockchip/overlay/Makefile
+@@ -136,6 +151,7 @@ dtbo-$(CONFIG_ARCH_ROCKCHIP) += \
+ 	rk3588-i2c3-m0.dtbo \
+ 	rk3588-i2c3-m1.dtbo \
+ 	rk3588-i2c4-m3.dtbo \
++	rk3588-i2c5-m2.dtbo \
+ 	rk3588-i2c5-m3.dtbo \
+ 	rk3588-i2c6-m0.dtbo \
+ 	rk3588-i2c6-m3.dtbo \
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/rk3588-i2c5-m2.dts b/arch/arm64/boot/dts/rockchip/overlay/rk3588-i2c5-m2.dts
+new file mode 100644
+index 0000000000000..dfa8aa7cc3822
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/rk3588-i2c5-m2.dts
+@@ -0,0 +1,7 @@
++/dts-v1/;
++/plugin/;
++&i2c5 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c5m2_xfer>;
++};
