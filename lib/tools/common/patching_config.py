@@ -23,6 +23,15 @@ class PatchingAutoPatchMakefileDTConfig:
 		return f"PatchingAutoPatchMakefileDTConfig(config-var={self.config_var}, directory={self.directory}, incremental={self.incremental})"
 
 
+class PatchingAutoPatchOverlaysConfig:
+	def __init__(self, data: dict):
+		self.source: str = data.get("source", None)
+		self.target: str = data.get("target", None)
+
+	def __str__(self):
+		return f"PatchingAutoPatchOverlaysConfig(source={self.source}, target={self.target})"
+
+
 class PatchingDTSDirectoryConfig:
 	def __init__(self, data: dict):
 		self.source: str = data.get("source", None)
@@ -68,6 +77,12 @@ class PatchingConfig:
 		]
 		self.has_autopatch_makefile_dt_configs: bool = len(self.autopatch_makefile_dt_configs) > 0
 
+		# Overlays auto-patch config
+		self.auto_patch_overlays_configs: list[PatchingAutoPatchOverlaysConfig] = [
+			PatchingAutoPatchOverlaysConfig(data) for data in self.yaml_config.get("auto-patch-overlays", [])
+		]
+		self.has_auto_patch_overlays_configs: bool = len(self.auto_patch_overlays_configs) > 0
+  
 		# DTS directories to copy config
 		self.dts_directories: list[PatchingDTSDirectoryConfig] = [
 			PatchingDTSDirectoryConfig(data) for data in self.yaml_config.get("dts-directories", [])

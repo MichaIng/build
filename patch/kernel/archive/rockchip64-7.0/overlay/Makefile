@@ -40,10 +40,7 @@ dtbo-$(CONFIG_ARCH_ROCKCHIP) += \
 	rockchip-rk3399-helios64-cpu-stability.dtbo \
 	rockchip-rk3399-opp-2ghz.dtbo \
 	rockchip-rk3399-pcie-gen2.dtbo \
-	rockchip-rk3399-spi-jedec-nor.dtbo \
-	rockchip-rk3399-spi-spidev.dtbo \
 	rockchip-rk3399-uart4.dtbo \
-	rockchip-rk3399-w1-gpio.dtbo \
 	rockchip-rk3566-sata2.dtbo \
 	rockchip-rk3566-i2c2-m1.dtbo \
 	rockchip-rk3566-i2c3-m0.dtbo \
@@ -117,12 +114,9 @@ dtbo-$(CONFIG_ARCH_ROCKCHIP) += \
 	rockchip-rk3588-odroidm2-weather-board-zero.dtbo \
 	rockchip-rk3588-odroidm2-display-vu8s.dtbo
 
-scr-$(CONFIG_ARCH_ROCKCHIP) += \
-       rockchip-fixup.scr
-
 dtbotxt-$(CONFIG_ARCH_ROCKCHIP) += \
        README.rockchip-overlays
 
-dtb-y += $(dtbo-y) $(scr-y) $(dtbotxt-y)
+dtb-y += $(dtbo-y) $(dtbotxt-y)
 
-clean-files    := *.dtbo *.scr
+clean-files    := *.dtbo

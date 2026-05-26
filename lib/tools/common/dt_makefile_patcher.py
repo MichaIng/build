@@ -329,3 +329,135 @@ def auto_patch_all_dt_makefiles(autopatcher_params: AutoPatcherParams) -> list[A
 			log.info(f"Committed changes to git: {commit.hexsha} for {one_autopatch_config.directory}")
 			log.info(f"Done with Makefile autopatch commit for {one_autopatch_config.directory}.")
 	return ret_desc_list
+
+
+def auto_patch_overlays(autopatcher_params: AutoPatcherParams) -> list[AutomaticPatchDescription]:
+	ret_desc_list: list[AutomaticPatchDescription] = []
+
+	# for each config ...
+	for config in autopatcher_params.pconfig.auto_patch_overlays_configs:
+		log.warning(f"Autopatching overlays in '{config.target}' from '{config.source}' ...")
+
+		desc = AutomaticPatchDescription()
+		desc.name = "Armbian overlays auto-patch"
+		desc.description = f"Armbian overlays AutoPatch for {config.target}"
+
+		# obtain full overlays target directory path
+		target: str = os.path.join(autopatcher_params.git_work_dir, config.target)
+		if not os.path.isdir(target):
+			raise ValueError(f"overlays target path '{target}' is not a directory")
+
+		# obtain full Makefile path
+		makefile: str = os.path.join(target, "Makefile")
+		if not os.path.isfile(makefile):
+			raise ValueError(f"overlays target Makefile '{makefile}' is not a file")
+		desc.files.append(makefile)
+
+		# patch Makefile to build all (base) device trees with symbols
+		log.debug(f"Patching {makefile} to build all (base) device trees with symbols ...")
+		with open(makefile, "a") as f:
+			f.write("\nDTC_FLAGS += $(if $(filter %.dtb,$(patsubst $(obj)/%,%,$@)), -@)")
+
+		# patch Makefile to support overlay fixup scripts
+		log.debug(f"Patching {makefile} to support compiling overlay fixup scripts ...")
+		with open(makefile, "a") as f:
+			f.write(
+				"\nquiet_cmd_scr = MKIMAGE $@"
+				"\ncmd_scr = mkimage -C none -A $(ARCH) -T script -d $< $@"
+				"\n$(obj)/%.scr: $(src)/%.scr-cmd FORCE"
+				"\n\t$(call if_changed,scr)"
+			)
+
+		# patch Makefile to support testing whether an overlay merges into a defined base
+		log.debug(f"Patching {makefile} to support optional overlay tests against base device trees ...")
+		with open(makefile, "a") as f:
+			f.write(
+				"\nquiet_cmd_overlay_test = DTBOTEST $@"
+				"\ncmd_overlay_test = fdtoverlay -i $(filter %.dtb,$^) -o /dev/null -v $(filter %.dtbo,$^)"
+				"\n$(obj)/%.dtbotest: FORCE"
+				"\n\t$(call cmd,overlay_test)"
+			)
+
+		# for each patch type (core or user) ...
+		for type in autopatcher_params.root_types_order:
+			dirs: list[str] = autopatcher_params.root_dirs_by_root_type[type]
+
+			# for each patch source dir ...
+			for dir in dirs:
+				source: str = os.path.join(dir.abs_dir, config.source)
+				if not os.path.isdir(source):
+					continue
+
+				log.info(f"Will copy from '{source}' to {target} ...")
+
+				# get a list of dtso files in the source directory
+				dtsos: list[str] = [
+					os.path.join(source, f) for f in os.listdir(source)
+					if f.endswith(".dtso")
+					and os.path.isfile(os.path.join(source, f))
+				]
+
+				# for each dtso file ...
+				for dtso in dtsos:
+					log.info(f"Copying '{dtso}' to '{target}' ...")
+					name: str = os.path.basename(dtso)[:-5]  # overlay name without .dtso extension
+					target_dtso: str = os.path.join(target, name + ".dtso")
+
+					# emit a warning if dtso already exists in target
+					if os.path.exists(target_dtso):
+						desc.overwrites.append(target_dtso)
+						log.warning(f"Target file '{target_dtso}' already exists; will overwrite it; consider if it should be removed.")
+
+					# copy dtso
+					shutil.copyfile(dtso, target_dtso)
+					desc.files.append(target_dtso)
+
+					# patch Makefile to build dtbo
+					log.info(f"Patching '{makefile}' for '{name}.dtbo' ...")
+					with open(makefile, "a") as f:
+						# add as -y as we know this CONFIG_ARCH is enabled, else these patches wouldn't be processed in the first place
+						f.write(f"\ndtb-y += {name}.dtbo")
+
+					# add optional test against base device trees if given
+					bases: str = dtso[:-5] + ".bases"
+					if os.path.isfile(bases):
+						log.info(f"Reading '{bases}' for base device trees to test '{name}.dtbo' against ...")
+						with open(bases, "r") as f:
+							for base in f:
+								base = base.strip()
+								log.info(f"Patching '{makefile}' to test '{name}.dtbo' against '{base}.dtb' ...")
+								if not os.path.isfile(os.path.join(target, base + ".dts")):
+									raise ValueError(f"base device tree '{base}.dts' to test '{name}.dtbo' against is not a file")
+								with open(makefile, "a") as mf:
+									mf.write(
+										f"\n$(obj)/{base}+{name}.dtbotest: $(obj)/{base}.dtb $(obj)/{name}.dtbo"
+										f"\nalways-y += {base}+{name}.dtbotest"
+									)
+
+					# add overlay readme if given
+					readme: str = dtso[:-5] + ".readme"
+					if os.path.isfile(readme):
+						log.info(f"Copying '{readme}' to '{target}' ...")
+						target_readme: str = os.path.join(target, name + ".readme")
+						shutil.copyfile(readme, target_readme)
+						desc.files.append(target_readme)
+						# patch Makefile
+						log.info(f"Patching '{makefile}' for '{name}.readme' ...")
+						with open(makefile, "a") as f:
+							f.write(f"\ndtb-y += {name}.readme")
+
+					# add overlay fixup script if given
+					fixup: str = dtso[:-5] + ".scr-cmd"
+					if os.path.isfile(fixup):
+						log.info(f"Copying '{fixup}' to '{target}' ...")
+						target_fixup: str = os.path.join(target, name + ".scr-cmd")
+						shutil.copyfile(fixup, target_fixup)
+						desc.files.append(target_fixup)
+						# patch Makefile
+						log.info(f"Patching '{makefile}' for '{name}.scr' ...")
+						with open(makefile, "a") as f:
+							f.write(f"\ndtb-y += {name}.scr")
+
+		ret_desc_list.append(desc)
+
+	return ret_desc_list

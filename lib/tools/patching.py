@@ -347,6 +347,10 @@ if apply_patches:
 	if pconfig.has_autopatch_makefile_dt_configs:
 		autopatcher_descriptions.extend(dt_makefile_patcher.auto_patch_all_dt_makefiles(autopatcher_params))
 
+	# Autopatch the overlays according to the config
+	if pconfig.has_auto_patch_overlays_configs:
+		autopatcher_descriptions.extend(dt_makefile_patcher.auto_patch_overlays(autopatcher_params))
+
 	if rewrite_patches_in_place:
 		# Now; we need to write the patches to files.
 		# loop over the patches, and group them by the parent; the parent is the PatchFileInDir object.

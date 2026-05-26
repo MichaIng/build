@@ -335,6 +335,17 @@ function kernel_package_callback_linux_dtb() {
 	mkdir -p "${package_directory}/boot/"
 	run_host_command_logged cp -rp "${tmp_kernel_install_dirs[INSTALL_DTBS_PATH]}" "${package_directory}/boot/dtb-${kernel_version_family}"
 
+	# Copy overlays from device tree base dirs to overlay sub dirs
+	declare dtbo="" overlay_dir=""
+	find "${package_directory}/boot/dtb-${kernel_version_family}" -type d -name 'overlay' -prune -o -type f -name '*.dtbo' -print | while read -r dtbo; do
+		overlay_dir="$(dirname "${dtbo}")/overlay"
+		[[ -d "${overlay_dir}" ]] || run_host_command_logged mkdir -v "${overlay_dir}"
+		[[ ! -f "${overlay_dir}/$(basename "${dtbo}")" ]] || display_alert "Overwriting overlay '${overlay_dir}/$(basename "${dtbo}")' with '${dtbo}'" "wrn"
+		run_host_command_logged mv -v "${dtbo}" "${overlay_dir}/"
+		[[ ! -f "${dtbo%.dtbo}.readme" ]] || run_host_command_logged mv -v "${dtbo%.dtbo}.readme" "${overlay_dir}/"
+		[[ ! -f "${dtbo%.dtbo}.scr" ]] || run_host_command_logged mv -v "${dtbo%.dtbo}.scr" "${overlay_dir}/"
+	done
+
 	# Generate a control file
 	cat <<- CONTROL_FILE > "${package_DEBIAN_dir}/control"
 		Version: ${artifact_version}

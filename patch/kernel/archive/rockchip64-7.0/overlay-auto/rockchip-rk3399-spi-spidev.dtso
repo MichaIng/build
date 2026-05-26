@@ -1,0 +1,46 @@
+/dts-v1/;
+/plugin/;
+
+&spi0 {
+	#address-cells = <1>; 
+	#size-cells = <0>; 
+	spidev { 
+		compatible = "armbian,spi-dev"; 
+		reg = <0>; 
+		spi-max-frequency = <10000000>; 
+		status = "disabled"; 
+	}; 
+};
+
+&spi1 {
+	#address-cells = <1>; 
+	#size-cells = <0>; 
+	spidev { 
+		compatible = "armbian,spi-dev"; 
+		reg = <0>; 
+		spi-max-frequency = <10000000>; 
+		status = "disabled"; 
+	}; 
+};
+
+&spi2 {
+	#address-cells = <1>; 
+	#size-cells = <0>; 
+	spidev { 
+		compatible = "armbian,spi-dev"; 
+		reg = <0>; 
+		spi-max-frequency = <10000000>; 
+		status = "disabled"; 
+	}; 
+};
+
+&spi3 {
+	#address-cells = <1>; 
+	#size-cells = <0>; 
+	spidev { 
+		compatible = "armbian,spi-dev"; 
+		reg = <0>; 
+		spi-max-frequency = <10000000>; 
+		status = "disabled"; 
+	}; 
+};

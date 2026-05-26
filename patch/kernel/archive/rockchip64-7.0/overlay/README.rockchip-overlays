@@ -8,7 +8,7 @@ rockchip (Rockchip)
 
 ### Provided overlays:
 
-- i2c7, i2c8, pcie-gen2, spi-spidev, uart4, w1-gpio
+- i2c7, i2c8, pcie-gen2, uart4
 - rk3399-helios64-cpu-stability (Helios64 only)
 
 for RK3308:
@@ -95,59 +95,6 @@ WARNING! Not officially supported by Rockchip!!!
 Switches the top USB 3.0 port to host mode.
 WARNING! Not officially supported by Rockchip!!!
 
-### spi-jedec-nor
-
-Activates MTD support for JEDEC compatible SPI NOR flash chips on SPI bus
-supported by the kernel SPI NOR driver
-
-SPI 0 pins (MOSI, MISO, SCK, CS): GPIO3_A5, GPIO3_A4, GPIO3_A6, GPIO3_A7
-SPI 1 pins (MOSI, MISO, SCK, CS): GPIO1_A7, GPIO1_B0, GPIO1_B1, GPIO1_B2
-SPI 2 pins (MOSI, MISO, SCK, CS): GPIO1_C0, GPIO1_B7, GPIO1_C1, GPIO1_C2
-SPI 3 pins (MOSI, MISO, SCK, CS): GPIO2_B2, GPIO2_B1, GPIO2_B3, GPIO2_B4
-
-Parameters:
-
-param_spinor_spi_bus (int)
-	SPI bus to activate SPI NOR flash support on
-	Required
-	Supported values: 0, 1, 2
-
-param_spinor_max_freq (int)
-	Maximum SPI frequency
-	Optional
-	Default: 1000000
-	Range: 3000 - 100000000
-
-### spi-spidev
-
-Activates SPIdev device node (/dev/spidevX.Y) for userspace SPI access,
-where X is the bus number and Y is the CS number
-
-SPI 0 pins (MOSI, MISO, SCK, CS): GPIO3_A5, GPIO3_A4, GPIO3_A6, GPIO3_A7
-SPI 1 pins (MOSI, MISO, SCK, CS): GPIO1_A7, GPIO1_B0, GPIO1_B1, GPIO1_B2
-SPI 2 pins (MOSI, MISO, SCK, CS): GPIO1_C0, GPIO1_B7, GPIO1_C1, GPIO1_C2
-SPI 3 pins (MOSI, MISO, SCK, CS): GPIO2_B2, GPIO2_B1, GPIO2_B3, GPIO2_B4
-
-Parameters:
-
-param_spidev_spi_bus (int)
-	SPI bus to activate SPIdev support on
-	Required
-	Supported values: 0, 1
-
-param_spidev_spi_cs (int)
-	SPI chip select number
-	Optional
-	Default: 0
-	Supported values: 0, 1
-	Using chip select 1 requires using "spi-add-cs1" overlay
-
-param_spidev_max_freq (int)
-	Maximum SPIdev frequency
-	Optional
-	Default: 1000000
-	Range: 3000 - 100000000
-
 ### uart4
 
 Activates UART4
@@ -163,12 +110,6 @@ Forces port 0 of the DesignWare xHCI controller to host mode.
 
 This can be used on plaforms such as NanoPC-T4, where devices plugged into the
 USB-C port may not be detected otherwise.
-
-### w1-gpio
-
-Activates 1-Wire GPIO master
-Requires an external pull-up resistor on the data pin
-or enabling the internal pull-up
 
 ### rk3318-box-led-conf1
 

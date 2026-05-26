@@ -28,6 +28,9 @@ config: # This is file 'patch/kernel/archive/rockchip64-6.19/0000.patching_confi
   auto-patch-dt-makefile:
     - { directory: "arch/arm64/boot/dts/rockchip", config-var: "CONFIG_ARCH_ROCKCHIP", add-only: true }
 
+  auto-patch-overlays:
+    - { source: "overlay-auto", target: "arch/arm64/boot/dts/rockchip" }
+
   # configuration for when applying patches to git / auto-rewriting patches (development cycle helpers)
   patches-to-git:
     do-not-commit-files:

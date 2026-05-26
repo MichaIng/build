@@ -1,0 +1,11 @@
+/dts-v1/;
+/plugin/;
+
+&{/} {
+	onewire@0 {
+		compatible = "w1-gpio";
+		pinctrl-names = "default";
+		gpios = <&gpio1 4 0 0xae>; // GPIO1_A4
+		status = "okay";
+	};
+};
