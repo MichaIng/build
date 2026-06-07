@@ -1,0 +1,28 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
+index 718d1a2da8e56..09dedd1d21efa 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5s.dts
+@@ -42,6 +44,7 @@ led-lan1 {
+ 			function-enumerator = <1>;
+ 			gpios = <&gpio3 RK_PD6 GPIO_ACTIVE_HIGH>;
+ 			label = "LAN-1";
++			linux,default-trigger = "r8169-0-100:00:link";
+ 		};
+ 
+ 		led-lan2 {
+@@ -51,6 +54,7 @@ led-lan2 {
+ 			function-enumerator = <2>;
+ 			gpios = <&gpio3 RK_PD7 GPIO_ACTIVE_HIGH>;
+ 			label = "LAN-2";
++			linux,default-trigger = "r8169-1-100:00:link";
+ 		};
+ 
+ 		power_led: led-sys {
+@@ -67,6 +71,7 @@ led-wan {
+ 			function = LED_FUNCTION_WAN;
+ 			gpios = <&gpio2 RK_PC1 GPIO_ACTIVE_HIGH>;
+ 			label = "WAN";
++			linux,default-trigger = "stmmac-0:01:link";
+ 		};
+ 	};
+ };
