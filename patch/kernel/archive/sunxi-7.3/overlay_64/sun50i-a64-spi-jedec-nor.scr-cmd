@@ -1,0 +1,13 @@
+if test -n "${param_spinor_spi_bus}"; then
+	test "${param_spinor_spi_bus}" = "0" && setenv tmp_spi_path "spi@1c68000"
+	test "${param_spinor_spi_bus}" = "1" && setenv tmp_spi_path "spi@1c69000"
+	fdt set /soc/${tmp_spi_path} status "okay"
+	fdt set /soc/${tmp_spi_path}/spiflash@0 status "okay"
+	if test -n "${param_spinor_max_freq}"; then
+		fdt set /soc/${tmp_spi_path}/spiflash@0 spi-max-frequency "<${param_spinor_max_freq}>"
+	fi
+	if test "${param_spinor_spi_cs}" = "1"; then
+		fdt set /soc/${tmp_spi_path}/spiflash@0 reg "<1>";
+	fi
+	env delete tmp_spi_path
+fi

@@ -1,0 +1,5 @@
+Enables ODROID-VU8S DSI0 display on ODROID M2 (RK3588).
+- Panel: odroid,vu8s on DSI0
+- Backlight: pwm14
+- Touch controller enabled
+- Enables mipidcphy0

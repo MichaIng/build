@@ -1,0 +1,5 @@
+### i2s0
+
+Activates SoC I2S controller 0
+
+I2S0 pins (MCLK, BCLK, LRCK, DO0, DO1, DO2, DO3, DI): PB5, PB6, PB7, PB8, PB9, PB10, PB11, PB12

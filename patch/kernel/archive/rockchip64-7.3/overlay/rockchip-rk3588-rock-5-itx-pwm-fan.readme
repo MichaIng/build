@@ -1,0 +1,2 @@
+Configures PWM fan for ROCK 5 ITX: sets cooling-levels and temperature trips
+for the /pwm-fan device.

@@ -1,0 +1,6 @@
+### pwm3-ph0
+
+Activates PWM3 on pin PH0.
+
+PH0/PH1 are the UART0 TX/RX pins (debug console). The overlay disables UART0 and
+removes console=ttyS0,115200 from the kernel command line.

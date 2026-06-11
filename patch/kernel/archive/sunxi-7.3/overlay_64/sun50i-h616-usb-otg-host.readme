@@ -1,0 +1,10 @@
+### usb-otg-host
+
+Runs the H616 USB0 (musb, PHY0) port as a USB host instead of the default
+peripheral/OTG role: sets dr_mode = "host" and enables EHCI0/OHCI0.
+
+On the Orange Pi Zero2 / Zero3 PHY0 is wired to the USB-C socket, which
+normally powers the board (both CC pins pulled to GND, no role switch), so
+the mainline DTS keeps it in peripheral mode. When the board is powered
+through the GPIO header instead, the USB-C port can act as a host with an
+adapter/cable that ignores CC.

@@ -1,0 +1,3 @@
+Activates CAN0 on RK3588 with mux mode 1.
+
+CAN0 pins (RX, TX): GPIO4_D5, GPIO4_D4

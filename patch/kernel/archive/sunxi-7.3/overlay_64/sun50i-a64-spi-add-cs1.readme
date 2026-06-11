@@ -1,0 +1,8 @@
+### spi-add-cs1
+
+Adds support for using SPI chip select 1 with GPIO for both SPI controllers
+Respective GPIO will be claimed only if controller is enabled by another overlay
+This overlay is required for using chip select 1 with other SPI overlays
+
+SPI 0 pins (CS1): PB6
+SPI 1 pins (CS1): PD6

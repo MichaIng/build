@@ -1,0 +1,7 @@
+Dusun DSOM-010R SoM (RK3328) on RP3328-B carrier board.
+- LED: GPIO2_C5
+- GPIO fan: GPIO2_C4
+- Audio amp: GPIO0_A2
+- WiFi/BT: AP6212
+- RTC: hym8563 @ I2C1
+- USB hub: GL850G

@@ -1,0 +1,2 @@
+Enables HDMI input receiver on RK3588.
+Activates hdmi_receiver_cma and hdmi_receiver nodes for HDMI-in capture.

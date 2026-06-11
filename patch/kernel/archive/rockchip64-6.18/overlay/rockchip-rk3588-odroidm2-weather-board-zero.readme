@@ -1,0 +1,3 @@
+Enables ODROID Weather Board Zero on ODROID M2 (RK3588).
+- I2C5 mux mode 2
+- SHTC1 temperature/humidity sensor @ I2C address 0x70

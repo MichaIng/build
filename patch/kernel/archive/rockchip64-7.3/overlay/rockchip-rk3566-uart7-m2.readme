@@ -1,0 +1,1 @@
+Enables UART7 on RK3566 with mux mode 2 (uart7m2_xfer pins).

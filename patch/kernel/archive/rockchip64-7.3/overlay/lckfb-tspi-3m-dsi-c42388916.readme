@@ -1,0 +1,13 @@
+### lckfb-tspi-3m-dsi-c42388916
+
+One of the three official MIPI DSI screens of the LCKFB TaishanPi 3M. Load only one.
+
+3.1 inch, 480x800. Display and backlight only, the CST128 touch
+controller has no driver enabled. Not tested on hardware.
+
+The overlay enables the DSI controller on video port 2, the panel through the
+rocknix,generic-dsi driver, the backlight on PWM2 channel 2 and, where listed, the
+touch controller on I2C0. HDMI stays on video port 0 and DisplayPort on video port 1.
+
+The board's lckfb-tspi-3m-screen service detects the attached screen at boot and
+sets the matching overlay, so it normally does not have to be chosen by hand.

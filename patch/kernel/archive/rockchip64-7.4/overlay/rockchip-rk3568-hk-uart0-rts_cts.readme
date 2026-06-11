@@ -1,0 +1,1 @@
+Enables uart1 with RTS/CTS hardware flow control pins (for HK board variant).

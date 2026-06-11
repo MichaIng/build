@@ -1,0 +1,1 @@
+Enables uart1, aliased as serial0 (main debug UART, for HK board variant).
