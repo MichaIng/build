@@ -1,0 +1,15 @@
+### rk322x-led-conf*
+
+Each device tree of this kind provides a different known wiring configuration
+(ie: gpio and active low/high) of the onboard leds. Each board manufacturer
+usually choose a different GPIO for the auxiliary led, but the main "working"
+led is always wired to the same gpio (although it may be active high or low)
+led-conf1 is commonly found in boards made by Chiptrip manufacturer
+led-conf2 is found in other boards with R329Q and MXQ_RK3229 marking
+led-conf3 is found in boards with R28-MXQ marking
+led-conf4 is found on boards with T066 marking
+led-conf5 is found on boards with IPB900 marking from AEMS PVT
+led-conf6 is found on boards with MXQ_PRO_V72 and similar markings, possibly
+with eMCP module.
+led-conf7 is found on boards with R29_MXQ, R2B_MXQ and H20 markings
+led-conf8 is specific for H20_221_V1.71 boards, but may work on other variants

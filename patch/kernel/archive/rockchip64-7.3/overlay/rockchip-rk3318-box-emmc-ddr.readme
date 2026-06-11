@@ -1,0 +1,5 @@
+### rk3318-box-emmc-ddr
+
+Activates eMMC DDR capability for rk3318 tv box boards. Probably all the eMMC chips
+nowadays support DDR mode, but its reliability heavily depends upon the quality
+of board wiring
