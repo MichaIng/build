@@ -1,0 +1,13 @@
+### uart2
+
+Activates serial port 2 (/dev/ttyS2)
+
+UART 2 pins (TX, RX, RTS, CTS): PA0, PA1, PA2, PA3
+
+Parameters:
+
+param_uart2_rtscts (bool)
+	Enable RTS and CTS pins
+	Optional
+	Default: 0
+	Set to 1 to enable CTS and RTS pins

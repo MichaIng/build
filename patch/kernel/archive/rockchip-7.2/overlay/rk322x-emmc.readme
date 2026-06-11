@@ -1,0 +1,14 @@
+### emmc*
+
+rk322x-emmc activates onboard emmc device node and deactivates the
+nand controller.
+rk322x-emmc-pins sets the pin controller default pull up/down
+configuration, not all boards are happy with this overlay, so your
+mileage may vary and may want to not use it.
+rk322x-emmc-ddr-ph45/ph180 sets the emmc ddr mode. First overlay
+sets the default phase clock shifting to 45 degrees, the second
+overlay to 180 degrees. They are alternative, choose the one that
+makes your emmc perform better.
+rk322x-emmc-hs200 enables the hs200 mode. It is preferable to
+ddr mode because it is more stable, but old emmc parts don't
+support it.

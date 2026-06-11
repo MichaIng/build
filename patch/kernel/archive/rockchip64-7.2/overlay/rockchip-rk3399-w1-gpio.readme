@@ -1,0 +1,12 @@
+### w1-gpio
+
+Activates 1-Wire GPIO master
+Requires an external pull-up resistor on the data pin
+or enabling the internal pull-up
+
+Parameters:
+
+param_w1_pin (str)
+	GPIO pin for the 1-wire data line
+	Optional
+	Default: GPIO1_A4

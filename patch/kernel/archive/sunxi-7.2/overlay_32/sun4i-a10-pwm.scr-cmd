@@ -1,0 +1,11 @@
+if test "${param_pwm_pins}" = "0"; then
+	fdt get value tmp_phandle /soc/pinctrl@1c20800/pwm0@0
+	fdt set /soc/pwm@1c20e00 pinctrl-0 "<${tmp_phandle}>"
+	env delete tmp_phandle
+fi
+
+if test "${param_pwm_pins}" = "1"; then
+	fdt get value tmp_phandle /soc/pinctrl@1c20800/pwm1@0
+	fdt set /soc/pwm@1c20e00 pinctrl-0 "<${tmp_phandle}>"
+	env delete tmp_phandle
+fi

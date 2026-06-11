@@ -1,0 +1,6 @@
+### nand
+
+Activates NAND controller
+
+This overlay should not be used until mainline MLC NAND support
+allows using NAND storage reliably

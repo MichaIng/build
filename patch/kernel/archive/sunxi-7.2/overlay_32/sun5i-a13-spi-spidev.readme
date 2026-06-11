@@ -1,0 +1,21 @@
+### spi-spidev
+
+Activates SPIdev device node (/dev/spidevX.Y) for userspace SPI access,
+where X is the bus number and Y is the CS number
+
+SPI 0 pins (MOSI, MISO, SCK, CS0): PC0, PC1, PC2, PC3
+SPI 1 pins (MOSI, MISO, SCK, CS0): PG11, PG12, PG10, PG9
+SPI 2 pins (MOSI, MISO, SCK, CS0): PE2, PE3, PE1, PE0
+
+Parameters:
+
+param_spidev_spi_bus (int)
+	SPI bus to activate mcp2515 support on
+	Required
+	Supported values: 0, 1, 2
+
+param_spidev_max_freq (int)
+	Maximum SPIdev frequency
+	Optional
+	Default: 1000000
+	Range: 3000 - 100000000

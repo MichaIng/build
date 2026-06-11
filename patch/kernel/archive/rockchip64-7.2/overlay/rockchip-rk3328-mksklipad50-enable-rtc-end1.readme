@@ -1,0 +1,7 @@
+### mksklipad50-enable-rtc-end1
+
+Enables end1 ethernet adapter, which also makes rtc work better.
+There is no physical port for end1, so this overlay is merely for
+testing the rtc.
+The rtc still tends to stall sometimes. In the original makerbase
+image, the rtc was completely unusable though.

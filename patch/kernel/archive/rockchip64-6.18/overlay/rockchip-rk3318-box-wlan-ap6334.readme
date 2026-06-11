@@ -1,0 +1,4 @@
+### rk3318-box-wlan-ap6334
+
+Set up additional device tree bits to properly support ap6334 (broadcom BCM4334)
+wifi chip and clones

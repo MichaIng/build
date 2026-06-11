@@ -1,0 +1,2 @@
+**meson-g12-gxl-cma-pool-896MB**
+Configures a 896MB CMA (Contiguous Memory Allocator) pool for G12/GXL platforms, useful for video decoding/encoding.
