@@ -1,0 +1,5 @@
+### i2c8
+
+Activates TWI/I2C bus 8
+
+I2C8 pins (SCL, SDA): GPIO1-C5, GPIO1-C4

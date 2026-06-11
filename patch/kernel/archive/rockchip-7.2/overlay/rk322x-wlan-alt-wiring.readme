@@ -1,0 +1,4 @@
+### rk322x-alt-wiring
+
+Some boards have different SDIO wiring setup for wifi chips. This overlay
+enables the different pin controller wiring and power enable
