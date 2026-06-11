@@ -1,0 +1,6 @@
+###  rk3308-otg-host
+
+RK3308 OTG USB mode  (14 Sep 2025):
+
+Most Armbian RK3308 kernels configured the OTG port to operate in peripheral mode by default
+Use this overlay to configure the OTG USB port as an additional host port.

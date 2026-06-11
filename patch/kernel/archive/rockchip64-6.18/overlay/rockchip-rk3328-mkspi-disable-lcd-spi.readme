@@ -1,0 +1,3 @@
+### mkspi-disable-lcd-spi
+
+DTBO to disable spi_for_{lcd,touch} when enabling uart1

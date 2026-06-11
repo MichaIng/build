@@ -351,6 +351,66 @@ function kernel_package_callback_linux_dtb() {
 	mkdir -p "${package_directory}/boot/"
 	run_host_command_logged cp -rp "${tmp_kernel_install_dirs[INSTALL_DTBS_PATH]}" "${package_directory}/boot/dtb-${kernel_version_family}"
 
+	# Build overlays, fixups, and readme files
+	declare key source target dtso dtbo bases base scr_cmd scr readme
+	yq -r '.config["auto-build-overlays"] | keys[]' "${SRC}/patch/kernel/${KERNELPATCHDIR}/0000.patching_config.yaml" | while read -r key; do
+		display_alert "Running overlay auto-builder index '${key}'" 'linux-dtb' 'info'
+		source=$(yq -r ".config[\"auto-build-overlays\"][${key}].source" "${SRC}/patch/kernel/${KERNELPATCHDIR}/0000.patching_config.yaml")
+		target=$(yq -r ".config[\"auto-build-overlays\"][${key}].target" "${SRC}/patch/kernel/${KERNELPATCHDIR}/0000.patching_config.yaml")
+		family=$(yq -r ".config[\"auto-build-overlays\"][${key}].family" "${SRC}/patch/kernel/${KERNELPATCHDIR}/0000.patching_config.yaml")
+		if [[ -n ${family} && ${family} != ${LINUXFAMILY} ]]
+		then
+			display_alert "Skipping auto-builder index '${key}' since its family filter '${family}' does not match the kernel family '${LINUXFAMILY}' of this build." 'linux-dtb' 'info'
+			continue
+		fi
+		if [[ -z ${source} || -z ${target} ]]; then
+			display_alert "Overlay auto-builder source or target not defined for index '${key}'" 'linux-dtb' 'error'
+			exit 1
+		fi
+		source="${SRC}/patch/kernel/${KERNELPATCHDIR}/${source}"
+		target="${package_directory}/boot/dtb-${kernel_version_family}/${target}/overlay"
+		[[ -d ${target} ]] || run_host_command_logged mkdir -p "${target}"
+		display_alert " - '${source}' => '${target}'" 'linux-dtb' 'info'
+
+		# Loop through all overlay sources in source dir
+		for dtso in "${source}/"*.dtso; do
+			# C preprocessing to resolved dt-binding includes and respective constant expansion: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/scripts/Makefile.dtbs#n133
+			display_alert "Preprocessing '${dtso}'" 'linux-dtb' 'info'
+			run_host_command_logged gcc -E -nostdinc -I "${kernel_work_dir}/scripts/dtc/include-prefixes" -undef -D__DTS__ -x assembler-with-cpp -o "${dtso}.cpp" "${dtso}"
+			# Compile overlay
+			dtbo=$(basename "${dtso}")
+			dtbo="${dtbo%.dtso}.dtbo"
+			display_alert "Compiling '${dtbo}'" 'linux-dtb' 'info'
+			run_host_command_logged dtc -I dts -O dtb -o "${target}/${dtbo}" "${dtso}.cpp"
+
+			# Test overlay against bases
+			bases="${dtso%.dtso}.bases"
+			if [[ -f ${bases} ]]; then
+				while read -r base; do
+					display_alert "Testing '${dtbo}' against '${base}.dtb'" 'linux-dtb' 'info'
+					base="${target%/overlay}/${base}.dtb"
+					run_host_command_logged fdtoverlay -i "${base}" -o /dev/null -v "${target}/${dtbo}"
+				done < "${bases}"
+			fi
+
+			# Compile per-overlay fixup script
+			scr_cmd="${dtso%.dtso}.scr-cmd"
+			if [[ -f ${scr_cmd} ]]; then
+				scr=$(basename "${scr_cmd}")
+				scr=${scr%-cmd}
+				display_alert "Compiling '${scr}'" 'linux-dtb' 'info'
+				run_host_command_logged mkimage -C none -A "${ARCHITECTURE}" -T script -d "${scr_cmd}" "${target}/${scr}"
+			fi
+
+			# Copy per-overlay readme
+			readme="${dtso%.dtso}.readme"
+			if [[ -f ${readme} ]]; then
+				display_alert "Copying '${readme}'" 'linux-dtb' 'info'
+				run_host_command_logged cp -v "${readme}" "${target}/"
+			fi
+		done
+	done
+
 	# Generate a control file
 	cat <<- CONTROL_FILE > "${package_DEBIAN_dir}/control"
 		Version: ${artifact_version}
