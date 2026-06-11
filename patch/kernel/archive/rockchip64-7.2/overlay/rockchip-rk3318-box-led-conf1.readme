@@ -1,0 +1,4 @@
+### rk3318-box-led-conf1
+
+Generic default led/gpio configuration for rk3318 tv box boards.
+Does not enable any specific or peculiar hardware.

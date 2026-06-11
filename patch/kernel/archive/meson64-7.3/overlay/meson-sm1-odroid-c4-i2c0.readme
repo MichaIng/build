@@ -1,0 +1,2 @@
+**meson-sm1-odroid-c4-i2c0** / **meson-sm1-odroid-c4-i2c1**
+Activates I2C bus 0 or 1 on Odroid C4.

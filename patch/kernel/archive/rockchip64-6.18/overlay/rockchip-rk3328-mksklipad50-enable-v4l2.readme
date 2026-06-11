@@ -1,0 +1,4 @@
+### mksklipad50-enable-v4l2
+
+Enables the video4linux devices /dev/video[012] /dev/media[01]
+Not sure, if they are of any use.

@@ -1,0 +1,6 @@
+### dwc3-0-host
+
+Forces port 0 of the DesignWare xHCI controller to host mode.
+
+This can be used on plaforms such as NanoPC-T4, where devices plugged into the
+USB-C port may not be detected otherwise.

@@ -1,0 +1,5 @@
+### rk322x-ir-wakeup
+
+Enable the rockchip-ir-driver in place of the standard gpio-ir-receiver.
+The rockchip-specific driver exploits the Trust OS and Virtual Poweroff mode
+to allow power up via remote controller power button.

@@ -1,0 +1,6 @@
+### rk3318-box-led-conf3
+
+This device tree overlay is suitable for MXQ-RK3328-D4_A board which
+has an integrated PMIC (RK805). The dtbo is very important to achieve
+1.3 Ghz speed for CPU and stable voltages for other parts of the
+system. Also enables gpio leds and keys.
