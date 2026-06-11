@@ -1,0 +1,4 @@
+### rk322x-usb-otg-peripheral
+
+Set the OTG USB port to peripheral mode to be used as USB slave instead
+of USB host

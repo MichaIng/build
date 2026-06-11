@@ -1,0 +1,5 @@
+### uart 5
+
+Activates serial port 5 (/dev/ttyS5)
+
+UART 5 pins (TX, RX): PH6, PH7

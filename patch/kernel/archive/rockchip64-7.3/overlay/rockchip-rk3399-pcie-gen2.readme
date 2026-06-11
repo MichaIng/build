@@ -1,0 +1,4 @@
+### pcie-gen2
+
+Enables PCIe Gen2 link speed on RK3399.
+WARNING! Not officially supported by Rockchip!!!

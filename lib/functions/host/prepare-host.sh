@@ -181,7 +181,7 @@ function adaptative_prepare_host_dependencies() {
 		core::lz4 core::unzip core::zip core::pigz core::xz-utils core::pbzip2 core::lzop core::zstd # compressors et al
 		core::bc core::bsdextrautils core::ca-certificates core::cpio
 		core::dialog core::dirmngr core::gawk core::gettext core::gnupg core::gpg
-		core::jq   # required for parsing JSON, specially rootfs-caching related.
+		core::jq yq # required for parsing JSON, specially rootfs-caching related, and YAML for the overlay auto-builder
 		core::kmod # causes initramfs rebuild, but usually pre-installed, so no harm unless it's an upgrade
 		core::libfile-fcntllock-perl
 		core::linux-base core::locales core::lsof
