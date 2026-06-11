@@ -1,0 +1,5 @@
+if test "${param_uart2_rtscts}" = "1"; then
+	fdt get value tmp_phandle /soc/pinctrl@1c20800/uart2-pi-pins phandle
+	fdt set /soc/serial@1c28800 pinctrl-0 "<${tmp_phandle}>"
+	env delete tmp_phandle
+fi

@@ -1,0 +1,13 @@
+### uart3
+
+Activates serial port 3 (/dev/ttyS3)
+
+UART 3 pins (TX, RX, RTS, CTS): PA13, PA14, PA15, PA16
+
+Parameters:
+
+param_uart3_rtscts (bool)
+	Enable RTS and CTS pins
+	Optional
+	Default: 0
+	Set to 1 to enable CTS and RTS pins

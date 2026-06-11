@@ -1,0 +1,6 @@
+### spi-add-cs1
+
+Activates SPI chip select 1 on SPI controller 0
+This overlay is required for using chip select 1 with other SPI overlays
+
+SPI 0 CS1 pin: PI14

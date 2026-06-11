@@ -1,0 +1,16 @@
+if test -n "${param_spidev_spi_bus}"; then
+	fdt get value tmp_spi_path /__symbols__	spi${param_spidev_spi_bus}
+	echo "---> spi${param_spidev_spi_bus} path = ${tmp_spi_path}"
+
+	fdt set ${tmp_spi_path} status "okay"
+	fdt set ${tmp_spi_path}/spidev status "okay"
+
+	if test -n "${param_spidev_max_freq}"; then
+		fdt set ${tmp_spi_path}/spidev spi-max-frequency "<${param_spidev_max_freq}>"
+	fi
+
+	if test "${param_spidev_spi_cs}" = "1"; then
+		fdt set ${tmp_spi_path}/spidev reg "<1>";
+	fi
+	env delete tmp_spi_path
+fi

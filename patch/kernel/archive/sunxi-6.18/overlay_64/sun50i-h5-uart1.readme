@@ -1,0 +1,13 @@
+### uart1
+
+Activates serial port 1 (/dev/ttyS1)
+
+UART 1 pins (TX, RX, RTS, CTS): PG6, PG7, PG8, PG9
+
+Parameters:
+
+param_uart1_rtscts (bool)
+	Enable RTS and CTS pins
+	Optional
+	Default: 0
+	Set to 1 to enable

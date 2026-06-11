@@ -1,0 +1,21 @@
+### spi-jedec-nor
+
+Activates MTD support for JEDEC compatible SPI NOR flash chips on SPI bus
+supported by the kernel SPI NOR driver
+
+SPI 0 pins (MOSI, MISO, SCK, CS0): PC0, PC1, PC2, PC3
+SPI 1 pins (MOSI, MISO, SCK, CS0): PG11, PG12, PG10, PG9
+SPI 2 pins (MOSI, MISO, SCK, CS0): PE2, PE3, PE1, PE0
+
+Parameters:
+
+param_spinor_spi_bus (int)
+	SPI bus to activate SPI NOR flash support on
+	Required
+	Supported values: 0, 1, 2
+
+param_spinor_max_freq (int)
+	Maximum SPI frequency
+	Optional
+	Default: 1000000
+	Range: 3000 - 100000000
