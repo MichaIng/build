@@ -1,0 +1,5 @@
+### i2c0
+
+Activates TWI/I2C bus 0
+
+I2C0 pins (SCL, SDA): PH0, PH1

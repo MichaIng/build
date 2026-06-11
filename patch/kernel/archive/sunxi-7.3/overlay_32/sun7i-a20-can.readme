@@ -1,0 +1,5 @@
+## can
+
+Activates SoC CAN controller
+
+CAN pins (TX, RX): PH20, PH21

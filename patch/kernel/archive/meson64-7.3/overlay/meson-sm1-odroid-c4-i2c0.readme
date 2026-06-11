@@ -1,0 +1,4 @@
+### meson-sm1-odroid-c4-i2c0
+
+Activates i2c2 bus over GPIOX-17(D3/SDA) and GPIOX-18(D5/SCL)
+Aliased to i2c0 for hardkernel odroid-c4 compatibility

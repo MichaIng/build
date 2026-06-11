@@ -1,0 +1,8 @@
+###  rk3308-s0-ext-antenna (10 Apr 2024)
+
+By default, the internal WiFi of the ROCK S0 selects
+its internal chip antenna.
+This antenna is so noisy as to be nearly unusable.
+The external antenna, fortunately, works quite well.
+Connect an external WiFi antenna and select it with
+this overlay.

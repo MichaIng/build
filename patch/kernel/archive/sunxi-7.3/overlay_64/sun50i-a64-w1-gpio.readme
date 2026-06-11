@@ -1,0 +1,19 @@
+### w1-gpio
+
+Activates 1-Wire GPIO master
+Requires external pull-up resistor on data pin
+
+Parameters:
+
+param_w1_pin (pin)
+	Data pin for 1-Wire master
+	Optional
+	Default: PD4
+
+param_w1_pin_int_pullup (bool)
+	Enable internal pull-up for the data pin
+	Optional
+	Default: 0
+	Set to 1 to enable the pull-up
+	This option should not be used with multiple devices, parasite power setup
+		or long wires -	please use external pull-up resistor instead

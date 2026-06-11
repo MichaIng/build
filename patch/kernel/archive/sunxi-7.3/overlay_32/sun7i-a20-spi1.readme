@@ -1,0 +1,5 @@
+### spi1
+
+Activates SPI controller 1 to use it with other overlays and sets up the pin multiplexing for it
+
+SPI 1 pins (MOSI, MISO, SCK, CS0): PI18, PI19, PI17, PI16

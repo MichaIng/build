@@ -1,0 +1,5 @@
+### spi0
+
+Activates SPI controller 0 to use it with other overlays and sets up the pin multiplexing for it
+
+SPI 0 pins (MOSI, MISO, SCK, CS0, CS1): PI12, PI13, PI11, PI10, PI14
