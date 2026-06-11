@@ -1,0 +1,1 @@
+Enables PWM15 on RK3566 with mux mode 1 (pwm15m1_pins).

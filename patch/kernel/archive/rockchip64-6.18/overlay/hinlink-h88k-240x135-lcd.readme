@@ -1,0 +1,4 @@
+Enables 240x135 SPI LCD on Hinlink H88K (RK3588).
+- SPI4 with custom M2 pin configuration
+- Panel: hinlink-h88k-240x135-lcd (MIPI DBI SPI)
+- Frequency: 2MHz

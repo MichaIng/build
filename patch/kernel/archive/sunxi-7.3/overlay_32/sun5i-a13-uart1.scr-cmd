@@ -1,0 +1,5 @@
+if test "${param_uart1_pins}" = "b"; then
+	fdt get value tmp_phandle /soc/pinctrl@1c28400/uart1@1 phandle
+	fdt set /soc/serial@1c28400 pinctrl-0 "<${tmp_phandle}>"
+	env delete tmp_phandle
+fi

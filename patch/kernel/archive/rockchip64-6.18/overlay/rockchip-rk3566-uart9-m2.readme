@@ -1,0 +1,1 @@
+Enables UART9 on RK3566 with mux mode 2 (uart9m2_xfer pins).

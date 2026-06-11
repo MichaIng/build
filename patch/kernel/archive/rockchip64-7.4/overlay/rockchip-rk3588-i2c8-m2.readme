@@ -1,0 +1,1 @@
+Activates I2C8 on RK3588 mux mode 2 (i2c8m2_xfer pins).

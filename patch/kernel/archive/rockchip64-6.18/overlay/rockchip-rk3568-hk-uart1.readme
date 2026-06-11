@@ -1,0 +1,1 @@
+Enables uart0, aliased as serial1, with DMA enabled (for HK board variant).

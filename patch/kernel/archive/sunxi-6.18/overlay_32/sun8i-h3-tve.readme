@@ -1,0 +1,7 @@
+### tve
+
+Activates the composite (CVBS) TV encoder.
+
+For boards whose DTS does not enable the output itself. It switches on the
+display engine and the TV encoder. PAL/NTSC follows the mode the display
+asks for.

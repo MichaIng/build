@@ -1,0 +1,1 @@
+Enables SPI3 mux mode 0 with spidev@0 at 50MHz on RK3566.

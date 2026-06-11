@@ -1,0 +1,3 @@
+Enables SPI NOR flash on NanoPi M6 (RK3588).
+Disables sdhci (eMMC slot), enables SFC (fspim0) with jedec spi-nor at 50MHz
+with 4-bit RX.

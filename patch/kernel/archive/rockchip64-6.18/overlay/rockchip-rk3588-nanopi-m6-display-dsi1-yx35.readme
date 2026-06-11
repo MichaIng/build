@@ -1,0 +1,5 @@
+Enables Yixian YX0345WV00V2 DSI1 panel on NanoPi M6 (RK3588).
+- Panel: yixian,yx0345wv00v2 on DSI1
+- Backlight: pwm11 mux mode 3
+- Touch: GT911 on I2C5 mux mode 2
+- Enables mipidcphy1

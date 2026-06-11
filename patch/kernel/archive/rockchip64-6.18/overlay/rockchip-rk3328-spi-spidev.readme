@@ -1,0 +1,2 @@
+Activates SPIdev on SPI0 for RK3328
+SPI base address: ff190000, max frequency 10MHz

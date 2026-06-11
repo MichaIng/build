@@ -1,0 +1,1 @@
+Enables PWM2 at address fdd70020 (for HK board variant).

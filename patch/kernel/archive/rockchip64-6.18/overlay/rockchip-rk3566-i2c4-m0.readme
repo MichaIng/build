@@ -1,0 +1,1 @@
+Enables I2C4 on RK3566 with mux mode 0 (i2c4m0_xfer pins).

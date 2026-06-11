@@ -1,0 +1,9 @@
+setenv bootargs_new ""
+for arg in ${bootargs}; do
+	if test "${arg}" = "console=ttyS0,115200"; then
+		echo "Warning: Disabling ttyS0 console due to enabled PWM overlay"
+	else
+		setenv bootargs_new "${bootargs_new} ${arg}"
+	fi
+done
+setenv bootargs "${bootargs_new}"

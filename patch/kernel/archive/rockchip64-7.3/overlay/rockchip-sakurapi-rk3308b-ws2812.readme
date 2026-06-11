@@ -1,0 +1,2 @@
+Enables WS2812 LED support on SakuraPi RK3308B via SPI1.
+Requires external WS2812 driver from GitHub.

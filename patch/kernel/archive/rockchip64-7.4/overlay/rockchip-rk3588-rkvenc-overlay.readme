@@ -1,0 +1,2 @@
+Adds RKVE (Rockchip Video Encoder) nodes to RK3588 for boards lacking VENC.
+Includes rkvenc CCU, rkvenc0/1 cores with MMUs, and mpp-service.

@@ -1,0 +1,14 @@
+if test -n "${param_spidev_spi_bus}"; then
+	test "${param_spidev_spi_bus}" = "0" && setenv tmp_spi_path "spi@1c05000"
+	test "${param_spidev_spi_bus}" = "1" && setenv tmp_spi_path "spi@1c06000"
+	test "${param_spidev_spi_bus}" = "2" && setenv tmp_spi_path "spi@1c17000"
+	fdt set /soc/${tmp_spi_path} status "okay"
+	fdt set /soc/${tmp_spi_path}/spidev status "okay"
+	if test -n "${param_spidev_max_freq}"; then
+		fdt set /soc/${tmp_spi_path}/spidev spi-max-frequency "<${param_spidev_max_freq}>"
+	fi
+	if test "${param_spidev_spi_bus}" = "0" && test "${param_spidev_spi_cs}" = "1"; then
+		fdt set /soc/${tmp_spi_path}/spidev reg "<1>"
+	fi
+	env delete tmp_spi_path
+fi

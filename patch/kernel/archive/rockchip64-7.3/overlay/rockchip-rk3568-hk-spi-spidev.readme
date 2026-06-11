@@ -1,0 +1,1 @@
+Enables SPI0 with spidev@0 at 100MHz (for HK board variant).

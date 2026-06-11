@@ -1,0 +1,2 @@
+Enables SATA1 on RK3588 by disabling the corresponding PCIe controller (pcie2x1l0)
+and enabling the SATA controller.

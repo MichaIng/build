@@ -1,0 +1,2 @@
+Activates PCM5102A DAC on I2S1 for RK3328 (tested on Rock Pi E)
+Disables the internal codec.

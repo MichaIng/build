@@ -1,0 +1,14 @@
+### uart4
+
+Activates serial port 4 (/dev/ttyS4)
+
+UART 4 pins a (TX, RX): PG10, PG11
+UART 4 pins b (TX, RX): PH4, PH5
+
+Parameters:
+
+param_uart4_pins (char)
+	Determines what pins UART 4 is exposed on
+	Optional
+	Default: a
+	Supported values: a, b

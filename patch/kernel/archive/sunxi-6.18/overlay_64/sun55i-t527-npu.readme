@@ -1,0 +1,5 @@
+### npu
+
+Enables the Vivante NPU on T527 boards whose base device tree keeps it
+disabled, such as the industrial Radxa Cubie A5E. The A527 used on the
+standard Cubie A5E has no NPU, so do not enable it there.

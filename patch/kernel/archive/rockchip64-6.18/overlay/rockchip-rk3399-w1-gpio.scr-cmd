@@ -1,0 +1,33 @@
+if test -n "${param_w1_pin}"; then
+	echo "Processing 1-wire parameter param_w1_pin=${param_w1_pin}"
+
+	setenv tmp_pinctrl "${param_w1_pin}"
+	setexpr tmp_pinctrl sub "GPIO(0|1|2|3|4)_\\S\\d+" "\\1";
+	echo "---> pinctrl (int) = ${tmp_pinctrl}"
+
+	fdt get value tmp_pinctrl /__symbols__	gpio${tmp_pinctrl}
+	echo "---> pinctrl (path) = ${tmp_pinctrl}"
+
+	fdt get value tmp_phandle ${tmp_pinctrl} phandle
+	echo "---> phandle = ${tmp_phandle}"
+
+	setenv tmp_bank "${param_w1_pin}"
+	setexpr tmp_bank sub "GPIO\\d_(\\S)\\d+" "\\1";
+	echo "---> bank = ${tmp_bank}"
+
+	test "${tmp_bank}" = "A" && setenv tmp_bank 0;
+	test "${tmp_bank}" = "B" && setenv tmp_bank 1;
+	test "${tmp_bank}" = "C" && setenv tmp_bank 2;
+	test "${tmp_bank}" = "D" && setenv tmp_bank 3;
+	setexpr tmp_bank ${tmp_bank} * 8;
+	echo "---> bank (int) = ${tmp_bank}"
+
+	setenv tmp_pin "${param_w1_pin}"
+	setexpr tmp_pin sub "GPIO\\d_\\S(\\d+)" "\\1";
+	setexpr tmp_pin ${tmp_bank} + ${tmp_pin}
+	echo "---> pin (int) = ${tmp_pin}"
+
+	echo "---> gpios = <${tmp_phandle} ${tmp_pin} 0 0>"
+	fdt set /onewire@0 gpios "<${tmp_phandle} ${tmp_pin} 0 0>"
+	env delete tmp_pinctrl tmp_bank tmp_pin tmp_phandle
+fi

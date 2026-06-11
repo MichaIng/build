@@ -1,0 +1,5 @@
+### uart 7
+
+Activates serial port 7 (/dev/ttyS7)
+
+UART 7 pins (TX, RX): PI20, PI21
