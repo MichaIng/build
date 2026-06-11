@@ -1,0 +1,5 @@
+### i2c7
+
+Activates TWI/I2C bus 7
+
+I2C7 pins (SCL, SDA): GPIO2-B0, GPIO2-A7 GPIO1-C5, GPIO1-C4

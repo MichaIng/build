@@ -1,0 +1,27 @@
+### spi-spidev
+
+Activates SPIdev device node (/dev/spidevX.Y) for userspace SPI access,
+where X is the bus number and Y is the CS number
+
+SPI 0 pins (MOSI, MISO, SCK, CS): PC0, PC1, PC2, PC3
+SPI 1 pins (MOSI, MISO, SCK, CS): PA15, PA16, PA14, PA13
+
+Parameters:
+
+param_spidev_spi_bus (int)
+	SPI bus to activate SPIdev support on
+	Required
+	Supported values: 0, 1
+
+param_spidev_spi_cs (int)
+	SPI chip select number
+	Optional
+	Default: 0
+	Supported values: 0, 1
+	Using chip select 1 requires using "spi-add-cs1" overlay
+
+param_spidev_max_freq (int)
+	Maximum SPIdev frequency
+	Optional
+	Default: 1000000
+	Range: 3000 - 100000000

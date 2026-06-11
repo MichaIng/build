@@ -1,0 +1,7 @@
+### i2c2
+
+Activates TWI/I2C bus 2
+
+I2C2 pins (SCL, SDA): PE12, PE13
+
+On most board this bus is wired to Camera (CSI) socket

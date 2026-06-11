@@ -1,0 +1,5 @@
+### i2c3
+
+Activates TWI/I2C bus 3
+
+I2C3 pins (SCL, SDA): PI0, PI1

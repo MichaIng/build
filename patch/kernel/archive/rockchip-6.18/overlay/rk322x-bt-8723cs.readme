@@ -1,0 +1,5 @@
+### rk322x-bt-*
+
+Overlays that enable bluetooth devices. Most common bluetooth chips are
+realtek ones.
+rk322x-bt-8723cs: enable this overlay for 8723cs and 8703bs wifi/bluetooth
