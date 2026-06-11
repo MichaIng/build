@@ -1,0 +1,16 @@
+### rk3308-b@1.3ghz (14 Sep 2025)
+
+Older ROCK Pi S V1.1 and V1.2 and all ROCK S0 boards use the B variant of the RK3308.
+Some V1.3 boards manufactured after October 2023 also use the B variant.
+
+ROCK Pi S V1.3 boards produced during 2022 and most of 2023 use
+the lower voltage BS variant of the RK3308.
+Per Radxa, these chips will be marked RK3308BS instead of RK3308B
+All boards utilizing the RK3308BS part should apply the rk3388-bs
+overlay to operate at the appropriate (lower) the core voltage,
+which also enables operation at 1.1Ghz.
+
+This rk3308-b@1.3ghz overlay overclocks the B variant CPU to 1.3Ghz.
+
+Applying this overlay to the BS variant the SoC consumes more power and
+has the potential to damage the SoC due to overvolting.

@@ -1,0 +1,6 @@
+### rk322x-ddr3-*
+
+Enable DRAM memory controller and sets the speed to the given speed bin.
+The DRAM memory controller reclocking only works with DDR3/LPDDR3, if
+you enable one of these overlays on boards with DDR2 memory the system
+will not boot anymore

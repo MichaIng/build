@@ -1,0 +1,4 @@
+### rk3318-box-wlan-ext
+
+Use sdmmc_ext device for sdio devices, enabled wifi on some boards (notably
+X88 Pro) which have wifi chip attached to sdmmc_ext controller.

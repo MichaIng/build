@@ -1,5 +1,3 @@
-// Enable PCM510x
-
 #include <dt-bindings/clock/rk3308-cru.h>
 
 /dts-v1/;

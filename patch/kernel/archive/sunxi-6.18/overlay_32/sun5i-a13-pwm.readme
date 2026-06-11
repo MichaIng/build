@@ -1,0 +1,5 @@
+### pwm
+
+Activates hardware PWM controller
+
+PWM pins (PWM0): PB2

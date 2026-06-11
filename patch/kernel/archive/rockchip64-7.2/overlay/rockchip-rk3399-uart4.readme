@@ -1,0 +1,8 @@
+### uart4
+
+Activates UART4
+
+UART4 pins (RX, TX): GPIO1_A7, GPIO1_B0
+
+Notice: UART4 cannot be activated together with SPI1 - they share the sam pins.
+Enabling this overlay disables SPI1.

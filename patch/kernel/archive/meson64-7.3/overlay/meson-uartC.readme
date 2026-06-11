@@ -1,0 +1,2 @@
+**meson-uartA** / **meson-uartC**
+Activates UART A or C on compatible Meson boards.

@@ -1,0 +1,4 @@
+### rk3318-box-wlan-ap6330
+
+Set up additional device tree bits properly support ap6330 (broaccom BCM4330)
+wifi + bt chip and clones.

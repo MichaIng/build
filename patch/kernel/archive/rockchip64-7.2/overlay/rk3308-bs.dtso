@@ -1,6 +1,3 @@
-//Adjustments for Rockchip RK3308-BS suffix SOC
-//https://dl.radxa.com/rockpis/docs/sw/RK3308B-S&RK3308H-S_Software_Compatibility_Introduction_V1.0.0_20211016.pdf
-
 /dts-v1/;
 /plugin/;
 
