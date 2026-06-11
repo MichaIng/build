@@ -1,0 +1,5 @@
+### rk3328-uart1
+
+Activates UART1
+
+UART1 pins (RX, TX): GPIO3_A6, GPIO3_A4

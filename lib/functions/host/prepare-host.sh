@@ -167,7 +167,7 @@ function adaptative_prepare_host_dependencies() {
 		flex
 		gawk gettext gnupg gpg
 		imagemagick # required for plymouth: converting images / spinners
-		jq          # required for parsing JSON, specially rootfs-caching related.
+		jq yq       # required for parsing JSON, specially rootfs-caching related, and YAML for the overlay auto-builder
 		kmod        # this causes initramfs rebuild, but is usually pre-installed, so no harm done unless it's an upgrade
 		libbison-dev libelf-dev libfdt-dev libfile-fcntllock-perl libmpc-dev libfl-dev lz4
 		libncurses-dev libssl-dev libusb-1.0-0-dev
