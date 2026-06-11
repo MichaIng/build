@@ -1,0 +1,8 @@
+if test "${param_uart1_rtscts}" = "1"; then
+	fdt get value tmp_phandle1 /soc/pinctrl@300b000/uart1-pins phandle
+	fdt get value tmp_phandle2 /soc/pinctrl@300b000/uart1-rts-cts-pins phandle
+	fdt set /soc/serial@5000400 pinctrl-names "default" "default"
+	fdt set /soc/serial@5000400 pinctrl-0 "<${tmp_phandle1}>"
+	fdt set /soc/serial@5000400 pinctrl-1 "<${tmp_phandle2}>"
+	env delete tmp_phandle1 tmp_phandle2
+fi

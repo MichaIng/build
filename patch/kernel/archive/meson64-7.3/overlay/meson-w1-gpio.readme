@@ -1,0 +1,2 @@
+**meson-w1-gpio** / **meson-w1AB-gpio**
+Activates 1-Wire bus on GPIO pins.

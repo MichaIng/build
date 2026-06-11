@@ -1,0 +1,5 @@
+### i2c4
+
+Activates TWI/I2C bus 4
+
+I2C4 pins (SCL, SDA): PI2, PI3

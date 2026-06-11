@@ -1,0 +1,2 @@
+**meson-i2cA** / **meson-i2cB**
+Activates I2C bus A or B on compatible Meson boards.

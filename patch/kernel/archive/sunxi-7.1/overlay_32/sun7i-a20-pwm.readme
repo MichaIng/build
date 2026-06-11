@@ -1,0 +1,16 @@
+### pwm
+
+Activates hardware PWM controller
+
+PWM pins (PWM0, PWM1): PB2, PI3
+
+Parameters:
+
+param_pwm_pins (string)
+	PWM pins activated with this overlay
+	Optional
+	Default: both
+	Supported values: 0, 1, both
+	If set to 0 only PWM0 can be used,
+		if set to 1 then only PWM1 can be used,
+		if set to both (default), both PWM0 and PWM1 can be used

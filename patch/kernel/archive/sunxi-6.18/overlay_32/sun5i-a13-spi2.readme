@@ -1,0 +1,5 @@
+### spi2
+
+Activates SPI controller 2 to use it with other overlays and sets up the pin multiplexing for it
+
+SPI 2 pins (MOSI, MISO, SCK, CS0): PE2, PE3, PE1, PE0

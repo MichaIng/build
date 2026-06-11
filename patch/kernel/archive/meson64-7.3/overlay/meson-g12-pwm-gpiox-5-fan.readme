@@ -1,0 +1,2 @@
+**meson-g12-pwm-gpiox-5-fan**
+Enables PWM-controlled fan on GPIOX_5 with thermal control for G12 series SoCs (A311D/G12A/G12B/SM1).

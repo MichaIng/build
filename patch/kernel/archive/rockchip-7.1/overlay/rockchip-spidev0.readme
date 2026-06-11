@@ -1,0 +1,4 @@
+### spidev0
+
+Activate spidev on spi0
+Depends on spi0

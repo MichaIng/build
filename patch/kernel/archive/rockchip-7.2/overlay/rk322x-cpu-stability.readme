@@ -1,0 +1,5 @@
+### rk322x-cpu-stability
+
+Increases the voltage of the lowest operating point to increase stability
+on some boards which have power regulation issues. Also adds a settling
+time to allow power regulator stabilize voltage.

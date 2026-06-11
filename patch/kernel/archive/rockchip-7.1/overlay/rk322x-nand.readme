@@ -1,0 +1,4 @@
+### nand
+
+Activates onboard nand device node and deactivates the emmc controller.
+Also sets up the pin controller default pull up/down configuration
