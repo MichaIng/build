@@ -14,7 +14,7 @@ config:
     - { directory: "arch/arm64/boot/dts/allwinner", config-var: "CONFIG_ARCH_SUNXI", add-only: true }
 
   auto-build-overlays:
-    - { source: "overlay_32", target: "allwinner" }
+    - { source: "overlay_32", target: "." }
     - { source: "overlay_64", target: "allwinner" }
 
   # configuration for when applying patches to git / auto-rewriting patches (development cycle helpers)

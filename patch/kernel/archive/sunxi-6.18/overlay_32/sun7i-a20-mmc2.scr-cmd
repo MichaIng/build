@@ -1,9 +1,15 @@
-setenv decompose_pin 'setexpr tmp_bank sub "P(B|C|D|E|G|H|I)\\d+" "\\1";
-
 if test -n "${param_mmc2_cd_pin}"; then
 	setenv tmp_bank "${param_mmc2_cd_pin}"
 	setenv tmp_pin "${param_mmc2_cd_pin}"
-	run decompose_pin
+	setexpr tmp_bank sub "P(B|C|D|E|G|H|I)\\d+" "\\1"
+	setexpr tmp_pin sub "P\\S(\\d+)" "\\1"
+	test "${tmp_bank}" = "B" && setenv tmp_bank 1
+	test "${tmp_bank}" = "C" && setenv tmp_bank 2
+	test "${tmp_bank}" = "D" && setenv tmp_bank 3
+	test "${tmp_bank}" = "E" && setenv tmp_bank 4
+	test "${tmp_bank}" = "G" && setenv tmp_bank 6
+	test "${tmp_bank}" = "H" && setenv tmp_bank 7
+	test "${tmp_bank}" = "I" && setenv tmp_bank 8
 	fdt get value tmp_phandle /soc/pinctrl@1c20800 phandle
 	fdt set /soc/mmc@1c11000 cd-gpios "<${tmp_phandle} ${tmp_bank} ${tmp_pin} 1>"
 fi
