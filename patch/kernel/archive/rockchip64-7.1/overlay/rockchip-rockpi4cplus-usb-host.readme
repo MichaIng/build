@@ -1,0 +1,4 @@
+### rockpi4cplus-usb-host
+
+Switches the top USB 3.0 port to host mode.
+WARNING! Not officially supported by Rockchip!!!

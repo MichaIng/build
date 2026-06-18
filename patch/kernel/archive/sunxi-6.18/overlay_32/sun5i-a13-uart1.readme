@@ -1,0 +1,15 @@
+### uart 1
+
+Activates serial port 1 (/dev/ttyS1)
+
+UART 1 pins a (TX, RX): PE10, PE11
+UART 1 pins b (TX, RX): PG3, PG4
+
+Parameters:
+
+param_uart1_pins (char)
+	UART 1 pinmux variant
+	Optional
+	Default: a
+	Supported values: a, b
+	Determines what pins UART 1 is exposed on if UART 1 is used

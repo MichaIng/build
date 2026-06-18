@@ -1,0 +1,5 @@
+### uart 6
+
+Activates serial port 6 (/dev/ttyS6)
+
+UART 6 pins (TX, RX): PI12, PI13

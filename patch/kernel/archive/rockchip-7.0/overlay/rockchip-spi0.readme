@@ -1,0 +1,4 @@
+### spi0
+
+Activate spi0
+conflicts with uart4

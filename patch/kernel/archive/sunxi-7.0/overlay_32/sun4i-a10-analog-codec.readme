@@ -1,0 +1,10 @@
+### analog-codec
+
+Activates SoC analog codec driver that provides Line Out and Mic In
+functionality
+
+## can
+
+Activates SoC CAN controller
+
+CAN pins (TX, RX): PH20, PH21

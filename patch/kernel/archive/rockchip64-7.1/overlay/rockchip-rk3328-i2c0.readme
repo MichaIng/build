@@ -1,0 +1,5 @@
+### rk3328-i2c0
+
+Activates TWI/I2C bus 0
+
+I2C0 (SCL, SDA): GPIO2-D0, GPIO2-D1

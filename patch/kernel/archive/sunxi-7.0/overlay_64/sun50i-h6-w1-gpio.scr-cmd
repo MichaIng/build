@@ -1,0 +1,15 @@
+setenv decompose_pin 'setexpr tmp_bank sub "P(A|C|D|G)\\d+" "\\1";
+
+if test -n "${param_w1_pin}"; then
+	setenv tmp_bank "${param_w1_pin}"
+	setenv tmp_pin "${param_w1_pin}"
+	run decompose_pin
+	fdt set /soc/pinctrl@300b000/w1_pins pins "${param_w1_pin}"
+	fdt get value tmp_phandle /soc/pinctrl@300b000 phandle
+	fdt set /onewire@0 gpios "<${tmp_phandle} ${tmp_bank} ${tmp_pin} 0>"
+	env delete tmp_pin tmp_bank tmp_phandle
+fi
+
+if test "${param_w1_pin_int_pullup}" = "1"; then
+	fdt set /soc/pinctrl@300b000/w1_pins bias-pull-up
+fi

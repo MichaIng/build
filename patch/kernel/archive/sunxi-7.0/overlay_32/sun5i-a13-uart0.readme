@@ -1,0 +1,5 @@
+### uart 0
+
+Activates serial port 0 (/dev/ttyS0)
+
+UART 0 pins (TX, RX): PF2, PF4

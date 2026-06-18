@@ -1,0 +1,4 @@
+### analog-codec
+
+Activates SoC analog codec driver that provides HP Out and Mic In
+functionality

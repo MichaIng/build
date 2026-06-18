@@ -1,0 +1,5 @@
+### i2c2
+
+Activates TWI/I2C bus 2
+
+I2C2 pins (SCL, SDA): PB20, PB21
