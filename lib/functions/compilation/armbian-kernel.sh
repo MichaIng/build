@@ -666,6 +666,11 @@ function armbian_kernel_config__enforce_modules_xz_compression() {
 	fi
 }
 
+# Enable ASUS keyboard driver for all boards
+function armbian_kernel_config__enable_asus_keyboard() {
+	opts_m+=('HID_ASUS')
+}
+
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #                           Kernel Configuration Helpers
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
