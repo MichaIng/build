@@ -495,6 +495,46 @@ driver_rtl8852bs() {
 	fi
 }
 
+driver_aic8800_sdio() {
+	# AIC8800 SDIO WiFi and Bluetooth driver from Radxa, used by Radxa ZERO 3W
+	if [[ ${LINUXFAMILY} == 'rockchip64' ]]; then
+
+		# Follow the default branch, like armbian-firmware does for the AIC8800 SDIO firmware
+		local aic8800_ver='branch:main'
+		local aic8800_fw_path='/lib/firmware/aic8800/SDIO'
+		local aic8800_dir="${kerneldir}/drivers/net/wireless/aic8800_sdio"
+
+		display_alert 'Adding' "AIC8800 SDIO WiFi and Bluetooth driver ${aic8800_ver}" 'info'
+
+		FETCH_FROM_REPO_CALLBACK_IF_REF_MUTABLE='none' fetch_from_repo "${GITHUB_SOURCE}/radxa-pkg/aic8800" 'aic8800' "${aic8800_ver}" 'yes' # https://github.com/radxa-pkg/aic8800
+		local aic8800_src="${SRC}/cache/sources/aic8800/${aic8800_ver#*:}"
+
+		# Apply the Debian patches for the SDIO driver. fetch_from_repo resets the checkout on the next run.
+		local aic8800_patch
+		while read -r aic8800_patch || [[ -n ${aic8800_patch} ]]; do
+			[[ -n ${aic8800_patch} && ${aic8800_patch} != '#'* ]] || continue
+			git -C "${aic8800_src}" apply --include='src/SDIO/*' "debian/patches/${aic8800_patch}" || exit_with_error 'Applying AIC8800 patch failed' "${aic8800_patch}"
+		done < "${aic8800_src}/debian/patches/series"
+
+		cd "${kerneldir}" || exit
+		rm -rf "${aic8800_dir}"
+		cp -R "${aic8800_src}/src/SDIO/driver_fw/driver/aic8800" "${aic8800_dir}"
+
+		# Enable the driver, fix the Kconfig paths, and use the firmware path of armbian-firmware
+		sed -i -e '/^config AIC_WLAN_SUPPORT$/,/^$/s/^\tdefault n$/\tdefault y/' \
+			-e "/^config AIC_FW_PATH\$/,/^\$/s|^\tdefault \".*\"\$|\tdefault \"${aic8800_fw_path}\"|" \
+			-e 's|drivers/net/wireless/aic8800/|drivers/net/wireless/aic8800_sdio/|' "${aic8800_dir}/Kconfig"
+		sed -i "s|^CONFIG_AIC_FW_PATH = .*|CONFIG_AIC_FW_PATH = \"${aic8800_fw_path}\"|" "${aic8800_dir}/aic8800_bsp/Makefile"
+
+		# Add to section Makefile and Kconfig
+		echo 'obj-$(CONFIG_AIC_WLAN_SUPPORT) += aic8800_sdio/' >> "${kerneldir}/drivers/net/wireless/Makefile"
+		sed -i '/source "drivers\/net\/wireless\/admtek\/Kconfig"/a source "drivers\/net\/wireless\/aic8800_sdio\/Kconfig"' \
+			"${kerneldir}/drivers/net/wireless/Kconfig"
+
+		display_alert 'Done adding' "AIC8800 SDIO WiFi and Bluetooth driver ${aic8800_ver}" 'info'
+	fi
+}
+
 driver_rtl88x2cs() {
 
 	# Wireless drivers for Realtek 88x2cs chipsets
