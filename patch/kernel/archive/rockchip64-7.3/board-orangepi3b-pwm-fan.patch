@@ -1,0 +1,36 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-orangepi-3b.dtsi b/arch/arm64/boot/dts/rockchip/rk3566-orangepi-3b.dtsi
+index d539570f531e1..889cd57488bc4 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-orangepi-3b.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3566-orangepi-3b.dtsi
+@@ -21,6 +21,20 @@ chosen {
+ 		stdout-path = "serial2:1500000n8";
+ 	};
+ 
++	fan: pwm-fan {
++		compatible = "pwm-fan";
++		#cooling-cells = <2>;
++		pwms = <&pwm7 0 50000 0>;
++		cooling-levels = <0 50 100 150 200 255>;
++		rockchip,temp-trips = <
++			50000   1
++			55000   2
++			60000   3
++			65000   4
++			70000   5
++		>;
++	};
++
+ 	hdmi-con {
+ 		compatible = "hdmi-connector";
+ 		type = "a";
+@@ -530,6 +544,10 @@ &pmu_io_domains {
+ 	status = "okay";
+ };
+ 
++&pwm7 {
++	status = "okay";
++};
++
+ &saradc {
+ 	vref-supply = <&vcca_1v8>;
+ 	status = "okay";
