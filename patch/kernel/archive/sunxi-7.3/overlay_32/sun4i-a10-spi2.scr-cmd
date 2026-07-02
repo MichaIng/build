@@ -1,6 +1,6 @@
 if test "${param_spi2_bus_pins}" = "b"; then
-	fdt get value tmp_phandle1 /soc/pinctrl@1c20800/spi2@1 phandle
-	fdt get value tmp_phandle2 /soc/pinctrl@1c20800/spi2_cs0@1 phandle
+	fdt get value tmp_phandle1 /soc/pinctrl@1c20800/spi2-pb-pins phandle
+	fdt get value tmp_phandle2 /soc/pinctrl@1c20800/spi2-cs0-pb-pin phandle
 	fdt set /soc/spi@1c17000 pinctrl-0 "<${tmp_phandle1}>"
 	fdt set /soc/spi@1c17000 pinctrl-1 "<${tmp_phandle2}>"
 	env delete tmp_phandle1 tmp_phandle2
