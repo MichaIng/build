@@ -14,7 +14,7 @@
 	fragment@1 {
 		target = <&pio>;
 		__overlay__ {
-			i2c4_pins_a: i2c4@0 {
+			i2c4_pins: i2c4@0 {
 				pins = "PI2", "PI3";
 				function = "i2c4";
 			};
