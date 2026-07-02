@@ -64,11 +64,13 @@
 	led@2 {
 		gpios = <&gpio2 RK_PB7 GPIO_ACTIVE_HIGH>;
 		label = "lan_led";
+		linux,default-trigger = "netdev";
 	};
 
 	led@3 {
 		gpios = <&gpio2 RK_PC2 GPIO_ACTIVE_HIGH>;
 		label = "wan_led";
+		linux,default-trigger = "stmmac-0:00:link";
 	};
 };
 
