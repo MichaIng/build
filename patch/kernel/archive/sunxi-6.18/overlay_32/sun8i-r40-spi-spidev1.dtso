@@ -1,4 +1,5 @@
 /dts-v1/;
+/plugin/;
 / {
     compatible = "allwinner,sun8i-r40";
     fragment@0 {
@@ -8,7 +9,7 @@
         };
     };
     fragment@1 {
-        target = <0xffffffff>;
+        target = <&spi1>;
         __overlay__ {
             #address-cells = <0x00000001>;
             #size-cells = <0x00000000>;
@@ -20,8 +21,5 @@
                 spi-max-frequency = <0x000f4240>;
             };
         };
-    };
-    __fixups__ {
-        spi1 = "/fragment@1:target:0";
     };
 };
