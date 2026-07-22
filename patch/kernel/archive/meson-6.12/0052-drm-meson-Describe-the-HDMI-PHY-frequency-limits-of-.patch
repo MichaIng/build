@@ -7,8 +7,8 @@ The maximum HDMI PLL frequency used by the vendor kernel is 2.976GHz.
 For Meson8 and Meson8b (both "HDMI 1.4 4k" capable) the maximum HDMI PHY
 frequency therefore is 2.976GHz. This makes sure we don't expose any
 HDMI 2.0 modes.
-Meson8b only supports up to 1080p according to it's datasheet. Limit the
-Meson8b SoC's to 1.65GHz (similar to what's already there for GXL S805X
+Meson8b only supports up to 1080p according to its datasheet. Limit the
+Meson8b SoCs to 1.65GHz (similar to what's already there for GXL S805X
 and S805Y).
 
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
@@ -28,12 +28,12 @@ index 111111111111..222222222222 100644
 +	/* The maximum frequency of HDMI PHY on Meson8 and Meson8m2 is ~3GHz */
 +	{
 +		.limits = {
-+			.max_hdmi_phy_freq = 2976000,
++			.max_hdmi_phy_freq = 2976000000,
 +		},
 +		.attrs = (const struct soc_device_attribute []) {
 +			{ .soc_id = "Meson8 (S802)", },
 +			{ .soc_id = "Meson8m2 (S812)", },
-+			{ /* sentinel */ },
++			{ /* sentinel */ }
 +		}
 +	},
 +	/*
@@ -43,7 +43,7 @@ index 111111111111..222222222222 100644
 +	 */
  	{
  		.limits = {
- 			.max_hdmi_phy_freq = 1650000,
+ 			.max_hdmi_phy_freq = 1650000000,
  		},
  		.attrs = (const struct soc_device_attribute []) {
  			{ .soc_id = "GXL (S805*)", },
