@@ -53,6 +53,9 @@ function compile_firmware() {
 	# Remove unused firmware, mostly for certain laptops, smartphones, and handhelds
 	run_host_command_logged rm -R "${fw_temp_dir}/${fw_dir}"/lib/firmware/{cirrus,novatek,qcom}
 
+	# Add symlink for Xunlong sun60iw2 in-tree AIC8800 driver
+	run_host_command_logged ln -sTv aic8800/SDIO/aic8800D80 "${fw_temp_dir}/${fw_dir}"/lib/firmware/aic8800d80
+
 	# Show the size of the firmware directory in a tree if debugging
 	if [[ "${SHOW_DEBUG}" == "yes" ]]; then
 		run_host_command_logged tree -C --du -h -L 1 "${fw_temp_dir}/${fw_dir}"/lib/firmware "|| true" # do not fail
