@@ -1,0 +1,19 @@
+diff --git a/common/image.c b/common/image.c
+index 563690bad78..99dc3c78ccd 100644
+--- a/common/image.c
++++ b/common/image.c
+@@ -1500,14 +1500,12 @@ int image_setup_linux(bootm_headers_t *images)
+ 		}
+ 	}
+ 
+-#if !defined(CONFIG_SUNXI_FDT_ADDR)
+ 	/*manually relocated, pass*/
+ 	if (IMAGE_ENABLE_OF_LIBFDT) {
+ 		ret = boot_relocate_fdt(lmb, of_flat_tree, &of_size);
+ 		if (ret)
+ 			return ret;
+ 	}
+-#endif
+ 
+ 	if (IMAGE_ENABLE_OF_LIBFDT && of_size) {
+ 		ret = image_setup_libfdt(images, *of_flat_tree, of_size, lmb);
