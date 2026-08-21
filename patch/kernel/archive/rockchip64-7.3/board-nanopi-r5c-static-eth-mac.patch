@@ -1,0 +1,72 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
+index c718b8dbb9c6b..58d893b87d121 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-nanopi-r5c.dts
+@@ -13,6 +13,11 @@ / {
+ 	model = "FriendlyElec NanoPi R5C";
+ 	compatible = "friendlyarm,nanopi-r5c", "rockchip,rk3568";
+ 
++	aliases {
++		ethernet0 = &rtl_eth1;
++		ethernet1 = &rtl_eth2;
++	};
++
+ 	gpio-keys {
+ 		compatible = "gpio-keys";
+ 		pinctrl-names = "default";
+@@ -34,6 +34,7 @@ gpio-leds {
+ 		led-lan {
+ 			color = <LED_COLOR_ID_GREEN>;
+ 			function = LED_FUNCTION_LAN;
+ 			gpios = <&gpio3 RK_PA3 GPIO_ACTIVE_HIGH>;
++			linux,default-trigger = "r8169-1-1100:00:link";
+ 		};
+ 
+@@ -47,6 +48,7 @@ power_led: led-power {
+ 		led-wan {
+ 			color = <LED_COLOR_ID_GREEN>;
+ 			function = LED_FUNCTION_WAN;
+ 			gpios = <&gpio3 RK_PA4 GPIO_ACTIVE_HIGH>;
++			linux,default-trigger = "r8169-2-2100:00:link";
+ 		};
+ 
+@@ -70,6 +75,19 @@ &pcie3x1 {
+ 	reset-gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
+ 	vpcie3v3-supply = <&vcc3v3_pcie>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		bus-range = <0x10 0x1f>;
++		device_type = "pci";
++		ranges;
++		reg = <0x100000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		rtl_eth1: ethernet@0,0 {
++			reg = <0x110000 0 0 0 0>;
++		};
++	};
+ };
+ 
+ &pcie3x2 {
+@@ -77,6 +95,19 @@ &pcie3x2 {
+ 	reset-gpios = <&gpio0 RK_PB6 GPIO_ACTIVE_HIGH>;
+ 	vpcie3v3-supply = <&vcc3v3_pcie>;
+ 	status = "okay";
++
++	pcie@0,0 {
++		bus-range = <0x20 0x2f>;
++		device_type = "pci";
++		ranges;
++		reg = <0x200000 0 0 0 0>;
++		#address-cells = <3>;
++		#size-cells = <2>;
++
++		rtl_eth2: ethernet@0,0 {
++			reg = <0x210000 0 0 0 0>;
++		};
++	};
+ };
+ 
+ &pinctrl {
