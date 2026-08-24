@@ -1,0 +1,22 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-ultra.dts b/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-ultra.dts
+index a15116058d0cf..c42ce8097448a 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-ultra.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-ultra.dts
+@@ -38,7 +38,7 @@ reserved-memory {
+ 		cma {
+ 			compatible = "shared-dma-pool";
+ 			reusable;
+-			reg = <0x0 (256 * 0x100000) 0x0 (256 * 0x100000)>;
++			reg = <0x0 (256 * 0x100000) 0x0 (128 * 0x100000)>;
+ 			linux,cma-default;
+ 		};
+ 	};
+@@ -1411,7 +1411,7 @@ &hdmirx_ctrler {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&hdmim2_rx_cec &hdmim2_rx_hpdin &hdmim2_rx_scl &hdmim2_rx_sda &hdmirx_det>;
+ 
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &i2s7_8ch {
