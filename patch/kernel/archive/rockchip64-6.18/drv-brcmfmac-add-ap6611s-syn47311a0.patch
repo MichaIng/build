@@ -1,0 +1,117 @@
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+index 20b890f7ae7ff..2a53aa893a638 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+@@ -913,6 +913,7 @@ int brcmf_sdiod_probe(struct brcmf_sdio_dev *sdiodev)
+ 	switch (sdiodev->func2->device) {
+ 	case SDIO_DEVICE_ID_BROADCOM_43752:
+ 	case SDIO_DEVICE_ID_BROADCOM_CYPRESS_4373:
++	case SDIO_DEVICE_ID_BROADCOM_SYNAPTICS_43711:
+ 		f2_blksz = SDIO_4373_FUNC2_BLOCKSIZE;
+ 		break;
+ 	case SDIO_DEVICE_ID_BROADCOM_4359:
+@@ -976,6 +977,12 @@ int brcmf_sdiod_probe(struct brcmf_sdio_dev *sdiodev)
+ 		.driver_data = BRCMF_FWVENDOR_ ## fw_vend \
+ 	}
+ 
++#define SYN_SDIO_DEVICE(dev_id, fw_vend) \
++	{ \
++		SDIO_DEVICE(SDIO_VENDOR_ID_SYNAPTICS, dev_id), \
++		.driver_data = BRCMF_FWVENDOR_ ## fw_vend \
++	}
++
+ /* devices we support, null terminated */
+ static const struct sdio_device_id brcmf_sdmmc_ids[] = {
+ 	BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_43143, WCC),
+@@ -1002,6 +1009,7 @@ static const struct sdio_device_id brcmf_sdmmc_ids[] = {
+ 	BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_CYPRESS_43012, CYW),
+ 	BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_CYPRESS_89359, CYW),
+ 	CYW_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_CYPRESS_43439, CYW),
++	SYN_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_SYNAPTICS_43711, WCC),
+ 	{ /* end: all zeroes */ }
+ };
+ MODULE_DEVICE_TABLE(sdio, brcmf_sdmmc_ids);
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
+index dcd8a296de106..06df90d0def4e 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
+@@ -741,6 +741,7 @@ static u32 brcmf_chip_tcm_rambase(struct brcmf_chip_priv *ci)
+ 	case BRCM_CC_43751_CHIP_ID:
+ 	case BRCM_CC_43752_CHIP_ID:
+ 	case BRCM_CC_4377_CHIP_ID:
++	case SYN_CC_43711_CHIP_ID:
+ 		return 0x170000;
+ 	case BRCM_CC_4378_CHIP_ID:
+ 		return 0x352000;
+@@ -1469,6 +1470,7 @@ bool brcmf_chip_sr_capable(struct brcmf_chip *pub)
+ 	case BRCM_CC_43751_CHIP_ID:
+ 	case BRCM_CC_43752_CHIP_ID:
+ 	case CY_CC_43012_CHIP_ID:
++	case SYN_CC_43711_CHIP_ID:
+ 		addr = CORE_CC_REG(pmu->base, retention_ctl);
+ 		reg = chip->ops->read32(chip->ctx, addr);
+ 		return (reg & (PMU_RCTL_MACPHY_DISABLE_MASK |
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+index 936df04504ec0..e212a7c1bdaf4 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+@@ -624,6 +624,7 @@ BRCMF_FW_CLM_DEF(4356, "brcmfmac4356-sdio");
+ BRCMF_FW_DEF(4359, "brcmfmac4359-sdio");
+ BRCMF_FW_CLM_DEF(4373, "brcmfmac4373-sdio");
+ BRCMF_FW_CLM_DEF(43012, "brcmfmac43012-sdio");
++BRCMF_FW_CLM_DEF(43711, "brcmfmac43711-sdio");
+ BRCMF_FW_CLM_DEF(43752, "brcmfmac43752-sdio");
+ 
+ /* firmware config files */
+@@ -659,6 +660,7 @@ static const struct brcmf_firmware_mapping brcmf_sdio_fwnames[] = {
+ 	BRCMF_FW_ENTRY(CY_CC_4373_CHIP_ID, 0xFFFFFFFF, 4373),
+ 	BRCMF_FW_ENTRY(CY_CC_43012_CHIP_ID, 0xFFFFFFFF, 43012),
+ 	BRCMF_FW_ENTRY(CY_CC_43439_CHIP_ID, 0xFFFFFFFF, 43439),
++	BRCMF_FW_ENTRY(SYN_CC_43711_CHIP_ID, 0xFFFFFFFF, 43711),
+ };
+ 
+ #define TXCTL_CREDITS	2
+@@ -3428,7 +3430,8 @@ static bool brcmf_sdio_aos_no_decode(struct brcmf_sdio *bus)
+ {
+ 	if (bus->ci->chip == BRCM_CC_43751_CHIP_ID ||
+ 	    bus->ci->chip == BRCM_CC_43752_CHIP_ID ||
+-	    bus->ci->chip == CY_CC_43012_CHIP_ID)
++	    bus->ci->chip == CY_CC_43012_CHIP_ID ||
++	    bus->ci->chip == SYN_CC_43711_CHIP_ID)
+ 		return true;
+ 	else
+ 		return false;
+@@ -4281,6 +4284,7 @@ static void brcmf_sdio_firmware_callback(struct device *dev, int err,
+ 		case SDIO_DEVICE_ID_BROADCOM_43751:
+ 		case SDIO_DEVICE_ID_BROADCOM_43752:
+ 		case SDIO_DEVICE_ID_BROADCOM_CYPRESS_4373:
++		case SDIO_DEVICE_ID_BROADCOM_SYNAPTICS_43711:
+ 			brcmf_dbg(INFO, "set F2 watermark to 0x%x*4 bytes\n",
+ 				  CY_4373_F2_WATERMARK);
+ 			brcmf_sdiod_writeb(sdiod, SBSDIO_WATERMARK,
+diff --git a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
+index df3b67ba4db29..64f3fc08e54b9 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
++++ b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
+@@ -60,6 +60,7 @@
+ #define CY_CC_4373_CHIP_ID		0x4373
+ #define CY_CC_43012_CHIP_ID		43012
+ #define CY_CC_43439_CHIP_ID		43439
++#define SYN_CC_43711_CHIP_ID		43711
+ 
+ /* USB Device IDs */
+ #define BRCM_USB_43143_DEVICE_ID	0xbd1e
+diff --git a/include/linux/mmc/sdio_ids.h b/include/linux/mmc/sdio_ids.h
+index 673cbdf434533..111017dd184c5 100644
+--- a/include/linux/mmc/sdio_ids.h
++++ b/include/linux/mmc/sdio_ids.h
+@@ -82,6 +82,9 @@
+ #define SDIO_VENDOR_ID_CYPRESS			0x04b4
+ #define SDIO_DEVICE_ID_BROADCOM_CYPRESS_43439	0xbd3d
+ 
++#define SDIO_VENDOR_ID_SYNAPTICS		0x06cb
++#define SDIO_DEVICE_ID_BROADCOM_SYNAPTICS_43711	0xaabf
++
+ #define SDIO_VENDOR_ID_MARVELL			0x02df
+ #define SDIO_DEVICE_ID_MARVELL_LIBERTAS		0x9103
+ #define SDIO_DEVICE_ID_MARVELL_8688_WLAN	0x9104
