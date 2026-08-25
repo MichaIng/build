@@ -52,7 +52,7 @@ index dcd8a296de106..06df90d0def4e 100644
  		reg = chip->ops->read32(chip->ctx, addr);
  		return (reg & (PMU_RCTL_MACPHY_DISABLE_MASK |
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index 936df04504ec0..e212a7c1bdaf4 100644
+index 936df04504ec0..03c776014ba4c 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
 @@ -624,6 +624,7 @@ BRCMF_FW_CLM_DEF(4356, "brcmfmac4356-sdio");
@@ -71,13 +71,11 @@ index 936df04504ec0..e212a7c1bdaf4 100644
  };
  
  #define TXCTL_CREDITS	2
-@@ -3428,7 +3430,8 @@ static bool brcmf_sdio_aos_no_decode(struct brcmf_sdio *bus)
- {
+@@ -3429,6 +3431,7 @@ static bool brcmf_sdio_aos_no_decode(struct brcmf_sdio *bus)
  	if (bus->ci->chip == BRCM_CC_43751_CHIP_ID ||
  	    bus->ci->chip == BRCM_CC_43752_CHIP_ID ||
--	    bus->ci->chip == CY_CC_43012_CHIP_ID)
-+	    bus->ci->chip == CY_CC_43012_CHIP_ID ||
-+	    bus->ci->chip == SYN_CC_43711_CHIP_ID)
+ 	    bus->ci->chip == CY_CC_43012_CHIP_ID)
++		//bus->ci->chip == SYN_CC_43711_CHIP_ID)
  		return true;
  	else
  		return false;
