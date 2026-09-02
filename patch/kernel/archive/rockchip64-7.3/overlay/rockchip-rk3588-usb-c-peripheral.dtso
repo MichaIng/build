@@ -1,5 +1,5 @@
 /dts-v1/;
 /plugin/;
-&usb_host0_xhci> {
+&usb_host0_xhci {
 	dr_mode = "peripheral";
 };
