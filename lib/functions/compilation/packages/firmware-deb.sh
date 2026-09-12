@@ -56,6 +56,10 @@ function compile_firmware() {
 	# Add symlink for Xunlong sun60iw2 in-tree AIC8800 driver
 	run_host_command_logged ln -sTv aic8800/SDIO/aic8800D80 "${fw_temp_dir}/${fw_dir}"/lib/firmware/aic8800d80
 
+	# Add symlink for Orange Pi 5 Max/Ultra Bluetooth
+	run_host_command_logged ln -sTv SYN43711A0.hcd "${fw_temp_dir}/${fw_dir}"/lib/firmware/brcm/BCM.xunlong,orangepi-5-max.hcd
+	run_host_command_logged ln -sTv SYN43711A0.hcd "${fw_temp_dir}/${fw_dir}"/lib/firmware/brcm/BCM.xunlong,orangepi-5-ultra.hcd
+
 	# Show the size of the firmware directory in a tree if debugging
 	if [[ "${SHOW_DEBUG}" == "yes" ]]; then
 		run_host_command_logged tree -C --du -h -L 1 "${fw_temp_dir}/${fw_dir}"/lib/firmware "|| true" # do not fail
