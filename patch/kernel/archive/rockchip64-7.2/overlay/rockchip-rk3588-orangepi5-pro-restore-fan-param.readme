@@ -1,0 +1,5 @@
+The default fan settings for the Orange Pi 5 Pro are safely set to avoid potential component 
+damage that may occur when using most common or aggressive fans with higher watts. 
+However, this overlay allow set them back to the PWM defaults, which is useful and even required when 
+using some low power high tech fans (like Sunon Vapo-Bearing). This overlay also sets the cooling 
+duty cycle a bit higher, as these fans have less cooling power and also make quiet fans quieter. (The fan design is counter-intuitive.)
