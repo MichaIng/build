@@ -284,8 +284,8 @@ function kernel_package_callback_linux_image() {
 		run_host_command_logged mkdir -pv "${package_directory}/usr/lib"
 		run_host_command_logged ln -sTv "../../boot/dtb-${kernel_version_family}" "${package_directory}/usr/lib/linux-image-${kernel_version_family}"
 
-		# Create symlink for old Orange Pi 3B device tree for transition from custom to mainline dtb: https://dietpi.com/forum/t/20689/22
-		[[ -f "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b-v1.1.dtb" && ! -f "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b.dtb" ]] && run_host_command_logged ln -s 'rk3566-orangepi-3b-v1.1.dtb' "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b.dtb"
+		# Add old Orange Pi 3B device tree name for transition from custom to mainline dtb: https://dietpi.com/forum/t/20689/22
+		[[ -f "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b-v1.1.dtb" && ! -f "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b.dtb" ]] && run_host_command_logged cp -a "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b-v1.1.dtb" "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b.dtb"
 
 		# Build overlays, fixups, and readme files
 		declare key source target dtso dtbo bases base scr_cmd scr readme
@@ -498,8 +498,8 @@ function kernel_package_callback_linux_dtb() {
 	mkdir -p "${package_directory}/boot/"
 	run_host_command_logged cp -rp "${tmp_kernel_install_dirs[INSTALL_DTBS_PATH]}" "${package_directory}/boot/dtb-${kernel_version_family}"
 
-	# Create symlink for old Orange Pi 3B device tree for transition from custom to mainline dtb: https://dietpi.com/forum/t/20689/22
-	[[ -f "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b-v1.1.dtb" && ! -f "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b.dtb" ]] && run_host_command_logged ln -s 'rk3566-orangepi-3b-v1.1.dtb' "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b.dtb"
+	# Add old Orange Pi 3B device tree name for transition from custom to mainline dtb: https://dietpi.com/forum/t/20689/22
+	[[ -f "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b-v1.1.dtb" && ! -f "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b.dtb" ]] && run_host_command_logged cp -a "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b-v1.1.dtb" "${package_directory}/boot/dtb-${kernel_version_family}/rockchip/rk3566-orangepi-3b.dtb"
 
 	# Build overlays, fixups, and readme files
 	declare key source target dtso dtbo bases base scr_cmd scr readme
