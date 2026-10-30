@@ -1,0 +1,9 @@
+Enables the PocketTerm35 GT911 touchscreen on ELTAY RM66 with the BB CM4 carrier.
+The controller uses I2C address 0x5d.
+The overlay enables I2C2 with the m1 pin mapping.
+
+BB CM4 header connections:
+
+- Pin 3: SDA, GPIO4_B4.
+- Pin 5: SCL, GPIO4_B5.
+- Pin 7: INT, GPIO4_C3, input with pull-up.

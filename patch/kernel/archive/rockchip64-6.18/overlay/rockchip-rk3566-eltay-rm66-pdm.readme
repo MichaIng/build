@@ -1,0 +1,7 @@
+Enables two-channel PDM microphone capture on ELTAY RM66.
+The sound card name is "ELTAY RM66 PDM".
+
+- Clock: GPIO3_D6.
+- Data: GPIO3_D7, SDI0.
+
+UART1 mux1 shares these pins. Do not enable both functions.
