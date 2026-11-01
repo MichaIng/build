@@ -834,6 +834,10 @@ def prepare_clean_git_tree_for_patching(repo: git.Repo, revision_sha: str, branc
 	# Let's remove all the untracked, but not ignored, files from the working copy
 	for file in repo.untracked_files:
 		full_name = os.path.join(repo.working_tree_dir, file)
+		# Nested git repositories (checked out submodules) are reported as untracked directories, with a trailing slash. Keep them.
+		if os.path.isdir(full_name):
+			log.debug(f"Keeping untracked directory '{file}'")
+			continue
 		log.debug(f"Removing untracked file '{file}'")
 		os.remove(full_name)
 

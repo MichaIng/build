@@ -1,0 +1,45 @@
+From: MichaIng <micha@dietpi.com>
+Subject: [PATCH] RISC-V: use mtval CSR name instead of mbadaddr
+
+mbadaddr is the name of the CSR from privileged spec 1.9.1. It was renamed to mtval in 1.10.
+binutils 2.45 does not know the old name anymore.
+---
+diff --git a/GCC/AML_RISC-V/port.c b/GCC/AML_RISC-V/port.c
+index 96a2096..8fa5d43 100755
+--- a/GCC/AML_RISC-V/port.c
++++ b/GCC/AML_RISC-V/port.c
+@@ -161,7 +161,7 @@ unsigned long ulSynchTrap(unsigned long mcause, unsigned long sp, unsigned long
+ 			printf("mstatus.MPS: 0x%x\n", mstatus_mps_bits);
+ 			printf("mcause: %lx, exception info: %s\n", mcause, exception_info);
+ 			printf("mepc: 0x%lx\n", read_csr(mepc));
+-			printf("mtval: 0x%lx\n", read_csr(mbadaddr));
++			printf("mtval: 0x%lx\n", read_csr(mtval));
+ 
+ 			for (i = 1; i < 31; i += 2) {
+ 				printf("x%-2d: %08x, x%-2d: %08x\n", i, *(unsigned *)(sp + i * REGBYTES),
+@@ -418,10 +418,10 @@ void vBusRespERRHandler(void)
+ {
+ #ifdef CONFIG_AOCPU_BUSRESPERR_WARNING
+ 	printf("Warning! bl30 bus resp err: access limitation\n");
+-	printf("mepc: 0x%lx, mbadaddr: 0x%lx\n", read_csr(mepc), read_csr(mbadaddr));
++	printf("mepc: 0x%lx, mbadaddr: 0x%lx\n", read_csr(mepc), read_csr(mtval));
+ #else
+ 	printf("bl30 bus resp err: access limitation, stop!\n");
+-	printf("mepc: 0x%lx, mbadaddr: 0x%lx\n", read_csr(mepc), read_csr(mbadaddr));
++	printf("mepc: 0x%lx, mbadaddr: 0x%lx\n", read_csr(mepc), read_csr(mtval));
+ 	do {} while (1);
+ #endif
+ }
+diff --git a/startup/exception_handlers.c b/startup/exception_handlers.c
+index 50b0e6d..717e22b 100644
+--- a/startup/exception_handlers.c
++++ b/startup/exception_handlers.c
+@@ -30,7 +30,7 @@ __weak uintptr_t handle_trap(uintptr_t mcause, uintptr_t sp)
+ 	//write(1, "trap\n", 5);
+ 	printf("In trap handler, the mcause is %d\n", mcause);
+ 	printf("In trap handler, the mepc is 0x%lx\n", read_csr(mepc));
+-	printf("In trap handler, the mtval is 0x%lx\n", read_csr(mbadaddr));
++	printf("In trap handler, the mtval is 0x%lx\n", read_csr(mtval));
+ 	//_exit(mcause);
+ 	printf("\nhandle_trap");
+ 
