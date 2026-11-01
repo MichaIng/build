@@ -1,0 +1,13 @@
+# Amlogic S905X5M quad core 4GB RAM SoC eMMC GBE USB3 SPI
+BOARD_NAME="Odroid C5"
+BOARD_VENDOR="hardkernel"
+BOARDFAMILY="meson-s7d"
+INTRODUCED="2025"
+BOOTCONFIG="s7d_odroidc5_config"
+BOOT_FDT_FILE="amlogic/s7d_s905x5m_odroidc5.dtb"
+KERNEL_TARGET="vendor"
+KERNEL_TEST_TARGET="vendor"
+FULL_DESKTOP="yes"
+SERIALCON="ttyS0:921600"
+BOOT_LOGO="desktop"
+OVERLAY_PREFIX="meson-s7d"

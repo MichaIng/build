@@ -1,0 +1,19 @@
+From: MichaIng <micha@dietpi.com>
+Subject: [PATCH] str: suspend.h: include stdint.h
+
+The header uses uint8_t and uint32_t. They were provided implicitly via stdio.h by newlib 3, but not anymore by recent newlib versions.
+---
+diff --git a/str/suspend.h b/str/suspend.h
+index 90064af..3bfdc49 100644
+--- a/str/suspend.h
++++ b/str/suspend.h
+@@ -6,6 +6,9 @@
+ 
+ #ifndef __SUSPEND_H__
+ #define __SUSPEND_H__
++
++#include <stdint.h>
++
+ /* wake up reason*/
+ #define UDEFINED_WAKEUP 0
+ #define CHARGING_WAKEUP 1
