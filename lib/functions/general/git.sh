@@ -456,6 +456,9 @@ function fetch_from_repo() {
 				display_alert "Skipping submodules" "GIT_SKIP_SUBMODULES=yes" "debug"
 			else
 				display_alert "Updating submodules" "" "ext"
+				# fetch_from_repo reports its result via the caller's checked_out_revision{,_ts}. The submodule fetches below
+				# would overwrite those with the submodules' revisions, so keep the outer repo's and restore them afterwards.
+				local outer_checked_out_revision="${checked_out_revision}" outer_checked_out_revision_ts="${checked_out_revision_ts}"
 				# FML: http://stackoverflow.com/a/17692710
 				while read -r key path; do
 					# key is like: submodule.libfoo.path
@@ -487,13 +490,17 @@ function fetch_from_repo() {
 					git_ensure_safe_directory "$workdir/$path"
 
 					# The expected commit belongs to the outer repo, not to its submodules.
+					# Submodules are plain nested repositories. They must not inherit the outer repo's bare repo and worktree setup,
+					# else they are created as further worktrees of the outer bare repo and clobber the outer working tree.
 					if [[ "${GIT_FIXED_WORKDIR}" != "" ]]; then
-						GIT_EXPECTED_SHA1="" GIT_FIXED_WORKDIR="${GIT_FIXED_WORKDIR}/${path}" fetch_from_repo "$surl" "$workdir/$path" "$sref"
+						GIT_EXPECTED_SHA1="" GIT_BARE_REPO_FOR_WORKTREE="" GIT_BARE_REPO_INITIAL_BRANCH="" GIT_FIXED_WORKDIR="${GIT_FIXED_WORKDIR}/${path}" fetch_from_repo "$surl" "$workdir/$path" "$sref"
 					else
-						GIT_EXPECTED_SHA1="" fetch_from_repo "$surl" "$workdir/$path" "$sref"
+						GIT_EXPECTED_SHA1="" GIT_BARE_REPO_FOR_WORKTREE="" GIT_BARE_REPO_INITIAL_BRANCH="" fetch_from_repo "$surl" "$workdir/$path" "$sref"
 					fi
 
 				done < <(git config -f .gitmodules --get-regexp 'submodule\..*\.path')
+				checked_out_revision="${outer_checked_out_revision}"
+				checked_out_revision_ts="${outer_checked_out_revision_ts}"
 			fi
 		fi
 	else

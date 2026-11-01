@@ -1,0 +1,48 @@
+From 205aab12d1671660aef195ac7defce076868a148 Mon Sep 17 00:00:00 2001
+From: MichaIng <micha@dietpi.com>
+Date: Tue, 3 Nov 2026 17:23:14 +0100
+Subject: [PATCH] vdec: fix copy of normal_info into vframe_counter_s
+
+The normal_info struct groups of struct vdec_info and struct vframe_counter_s have different layouts: vdec_info additionally contains dw, dpb_num, margin_num, filed_flag and bit_depth after status. memcpy() with the size of the source group hence writes 8 bytes beyond the destination group, into vf_type and signal_type, and shifts all members after status, e.g. frame_count, total_data. With CONFIG_FORTIFY_SOURCE=y, this fails to build with: detected write beyond size of field (1st parameter). Copy the members individually instead.
+---
+ drivers/frame_provider/decoder/utils/vdec.c | 24 +++++++++++++++++++--
+ 1 file changed, 22 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/frame_provider/decoder/utils/vdec.c b/drivers/frame_provider/decoder/utils/vdec.c
+index 3ea8bcc..41ab45e 100644
+--- a/drivers/frame_provider/decoder/utils/vdec.c
++++ b/drivers/frame_provider/decoder/utils/vdec.c
+@@ -8829,8 +8829,28 @@ void vdec_fill_vdec_frame(struct vdec_s *vdec, struct vframe_qos_s *vframe_qos,
+ 	if (vframe_qos)
+ 		memcpy(&fifo_buf[i].qos, vframe_qos, sizeof(struct vframe_qos_s));
+ 	if (vinfo) {
+-		memcpy(&fifo_buf[i].normal_info, &vinfo->normal_info,
+-		        sizeof(vinfo->normal_info));
++		/*
++		 * The normal_info groups of struct vdec_info and struct
++		 * vframe_counter_s differ: the former has additional dw,
++		 * dpb_num, margin_num, filed_flag and bit_depth members.
++		 * Copy members individually, instead of overflowing the
++		 * destination group with a misaligned memcpy().
++		 */
++		fifo_buf[i].frame_width = vinfo->frame_width;
++		fifo_buf[i].frame_height = vinfo->frame_height;
++		fifo_buf[i].frame_rate = vinfo->frame_rate;
++		fifo_buf[i].bit_rate = vinfo->bit_rate;
++		fifo_buf[i].frame_dur = vinfo->frame_dur;
++		fifo_buf[i].frame_data = vinfo->frame_data;
++		fifo_buf[i].error_count = vinfo->error_count;
++		fifo_buf[i].status = vinfo->status;
++		fifo_buf[i].frame_count = vinfo->frame_count;
++		fifo_buf[i].error_frame_count = vinfo->error_frame_count;
++		fifo_buf[i].drop_frame_count = vinfo->drop_frame_count;
++		fifo_buf[i].total_data = vinfo->total_data;
++		fifo_buf[i].samp_cnt = vinfo->samp_cnt;
++		fifo_buf[i].offset = vinfo->offset;
++		fifo_buf[i].ratio_control = vinfo->ratio_control;
+ 		/*copy for ipb report*/
+ 		memcpy(&fifo_buf[i].ipb, &vinfo->ipb,
+ 		        sizeof(vinfo->ipb));
+-- 
+2.43.0
+

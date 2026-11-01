@@ -1,0 +1,29 @@
+From c035994c9fbe8982c276fe17d22b52a359ed25cc Mon Sep 17 00:00:00 2001
+From: MichaIng <micha@dietpi.com>
+Date: Mon, 2 Nov 2026 17:47:25 +0100
+Subject: [PATCH] media: dpss: clear whole addr_sml array without fortify
+ warning
+
+memset() on &addr_sml[0][0] with the size of the whole 2D array is flagged by CONFIG_FORTIFY_SOURCE as write beyond the first row: "detected write beyond size of field". Pass the array itself with its sizeof, which clears the same memory.
+---
+ drivers/media/dpss/dpss_s_common.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/media/dpss/dpss_s_common.c b/drivers/media/dpss/dpss_s_common.c
+index 5ba6113..ca1662f 100644
+--- a/drivers/media/dpss/dpss_s_common.c
++++ b/drivers/media/dpss/dpss_s_common.c
+@@ -5081,9 +5081,7 @@ static void dpss_buf_release(struct dpss_ch_s *pch)
+ 		//blk_idle_put(d_dd, blk);
+ 		pch->c.blk_sml_nr = NULL;
+ 		//addr:
+-		memset(&pch->c.addr_sml[0][0], 0,
+-		       sizeof(unsigned long) * DPSS_SML_NUB *
+-		       DPPS_SML_BUF_IDX_NUB);
++		memset(pch->c.addr_sml, 0, sizeof(pch->c.addr_sml));
+ 	}
+ 
+ 	//release rdma =======================
+-- 
+2.43.0
+

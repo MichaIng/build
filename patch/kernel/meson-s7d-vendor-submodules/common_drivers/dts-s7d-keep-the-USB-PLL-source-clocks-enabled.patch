@@ -1,0 +1,49 @@
+From: MichaIng <micha@dietpi.com>
+Subject: [PATCH] arm64: dts: s7d: keep the USB PLL source clocks enabled
+
+The USB PHY PLLs and the CRG controller depend on SCMI clocks which U-Boot
+enables, but which have no consumer in the device tree. With the SCMI clock
+driver built in, clk_disable_unused switches them off at late init, before
+the PHY driver probes, and the PHY PLL fails to lock:
+
+  meson_usb2phy_s7d_set_pll set pll failed
+  crg_drd fe340000.crg: probe with driver crg_drd failed with error -110
+
+Add them to the PHY nodes, whose driver enables all listed clocks. All four
+are needed: without the PHY ones the PHY PLL fails, without the PLL source
+ones xHCI setup times out.
+---
+diff --git a/arch/arm64/boot/dts/amlogic/meson-s7d.dtsi b/arch/arm64/boot/dts/amlogic/meson-s7d.dtsi
+index 7c4f610..c51411e 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-s7d.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-s7d.dtsi
+@@ -742,8 +742,12 @@
+ 								0x0
+ 								0x7e18
+ 								0x9>;
+-				clocks = <&clkc CLKID_SYS_USB>;
+-				clock-names = "crg_general";
++				clocks = <&clkc CLKID_SYS_USB>,
++					 <&scmi_clk CLKID_SCMI_USB0_PLL_SRC>,
++					 <&scmi_clk CLKID_SCMI_USB0_PHY_GP1_PLL_SRC>;
++				clock-names = "crg_general",
++					      "usb0_pll_src",
++					      "usb0phy_gp1_src";
+ 				phy-otg;
+ 				interrupts = <0 129 IRQ_TYPE_EDGE_RISING>;
+ 			};
+@@ -770,8 +774,12 @@
+ 								0x0
+ 								0x7e18
+ 								0x9>;
+-				clocks = <&clkc CLKID_SYS_USB>;
+-				clock-names = "crg_general";
++				clocks = <&clkc CLKID_SYS_USB>,
++					 <&scmi_clk CLKID_SCMI_USB1_PLL_SRC>,
++					 <&scmi_clk CLKID_SCMI_USB1_PHY_PLL_SRC>;
++				clock-names = "crg_general",
++					      "usb1_pll_src",
++					      "usb1phy_pll_src";
+ 			};
+ 		};
+ 

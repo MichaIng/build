@@ -66,6 +66,11 @@ function prepare_kernel_packaging_debs() {
 	# Due to we call `make install` twice, we will get some `.old` files
 	run_host_command_logged rm -rf "${tmp_kernel_install_dirs[INSTALL_PATH]}/*.old" || true
 
+	call_extension_method "pre_package_kernel_dtbs" <<- 'PRE_PACKAGE_KERNEL_DTBS'
+		*adjust the installed DTBs before packaging, for both linux-image and linux-dtb*
+		The DTBs are in `${tmp_kernel_install_dirs[INSTALL_DTBS_PATH]}`. Modify them in place.
+	PRE_PACKAGE_KERNEL_DTBS
+
 	if [[ "${KERNEL_DTB_ONLY}" == "yes" ]]; then
 		# if dtbs present, package those too separately, for u-boot usage.
 		if [[ -d "${tmp_kernel_install_dirs[INSTALL_DTBS_PATH]}" ]]; then
