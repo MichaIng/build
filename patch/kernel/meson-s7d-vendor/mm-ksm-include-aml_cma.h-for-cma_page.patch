@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MichaIng <micha@dietpi.com>
+Date: Mon, 2 Nov 2026 17:09:14 +0100
+Subject: [PATCH] mm: ksm: include aml_cma.h for cma_page()
+
+With CONFIG_KSM=y and CONFIG_AMLOGIC_CMA=y, cma_page() is used without declaration, which fails with -Werror=implicit-function-declaration. Include the header, like other mm/ sources do. Hardkernel's odroidc5_defconfig has KSM disabled, so this was never hit there.
+---
+ mm/ksm.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/mm/ksm.c b/mm/ksm.c
+index c046cd70a..834ae8137 100644
+--- a/mm/ksm.c
++++ b/mm/ksm.c
+@@ -43,6 +43,9 @@
+ #include <linux/pagewalk.h>
+ 
+ #include <asm/tlbflush.h>
++#ifdef CONFIG_AMLOGIC_CMA
++#include <linux/amlogic/aml_cma.h>
++#endif
+ #include "internal.h"
+ #include "mm_slot.h"
+ 
+-- 
+Armbian
+

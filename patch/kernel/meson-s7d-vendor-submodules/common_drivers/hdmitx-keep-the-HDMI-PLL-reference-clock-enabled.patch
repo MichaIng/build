@@ -1,0 +1,42 @@
+From: MichaIng <micha@dietpi.com>
+Subject: [PATCH] hdmitx: keep the HDMI PLL reference clock enabled
+
+On S7D, the HDMI PLL reference is the SCMI clock HDMI_EARC_PLL_SRC, which
+U-Boot enables, but which has no consumer in the device tree. With the SCMI
+clock driver built in, clk_disable_unused switches it off at late init. The
+HDMI PLL then fails to lock, "pll[0x50001c0] reset 10 times", and there is
+neither picture nor audio.
+
+Add an optional "hdmi_pll_src" clock to the HDMI TX driver, which keeps it
+enabled while the device is bound, and assign the SCMI clock on S7D.
+---
+diff --git a/arch/arm64/boot/dts/amlogic/meson-s7d.dtsi b/arch/arm64/boot/dts/amlogic/meson-s7d.dtsi
+index 7c4f610..61e78f6 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-s7d.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-s7d.dtsi
+@@ -1194,6 +1194,8 @@
+ 		compatible = "amlogic, amhdmitx-s7d";
+ 		dev_name = "amhdmitx";
+ 		status = "disabled";
++		clocks = <&scmi_clk CLKID_SCMI_HDMI_EARC_PLL_SRC>;
++		clock-names = "hdmi_pll_src";
+ 		//power-domains = <&pwrdm PDID_T7_VI_CLK2>;
+ 		vend-data = <&vend_data>;
+ 		pinctrl-names="hdmitx_hpd", "hdmitx_ddc";
+diff --git a/drivers/media/vout/hdmi_tx_connector/hdmitx_drv.c b/drivers/media/vout/hdmi_tx_connector/hdmitx_drv.c
+index 25a63ae..8fd8293 100644
+--- a/drivers/media/vout/hdmi_tx_connector/hdmitx_drv.c
++++ b/drivers/media/vout/hdmi_tx_connector/hdmitx_drv.c
+@@ -232,6 +232,12 @@ static void amhdmitx_clktree_probe(struct device *hdmitx_dev, struct hdmitx_comm
+ 	struct clk *hdcp22_tx_skp, *hdcp22_tx_esm;
+ 	struct clk *venci_top_gate, *venci_0_gate, *venci_1_gate;
+ 	struct clk *cts_hdmi_axi_clk;
++	struct clk *hdmi_pll_src;
++
++	/* Optional reference clock of the HDMI PLL, which must stay enabled while the device is bound */
++	hdmi_pll_src = devm_clk_get_optional_enabled(hdmitx_dev, "hdmi_pll_src");
++	if (IS_ERR(hdmi_pll_src))
++		HDMITX_ERROR("failed to enable hdmi_pll_src clock: %ld\n", PTR_ERR(hdmi_pll_src));
+ 
+ 	hdmi_clk_vapb = devm_clk_get(hdmitx_dev, "hdmi_vapb_clk");
+ 	if (!IS_ERR(hdmi_clk_vapb)) {
