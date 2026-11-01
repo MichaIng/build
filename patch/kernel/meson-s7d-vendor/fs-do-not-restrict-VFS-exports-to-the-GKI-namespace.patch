@@ -1,0 +1,46 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MichaIng <micha@dietpi.com>
+Date: Mon, 2 Nov 2026 18:27:42 +0100
+Subject: [PATCH] fs: do not restrict VFS exports to the GKI namespace
+
+With CONFIG_GKI_HACKS_TO_FIX=y, some VFS and cred symbols are exported into the namespace VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver. Only filesystems allowed as GKI modules import it, so filesystems and other drivers built as modules on a regular Linux distribution fail modpost, like nfs, cifs, overlay, btrfs, xfs, exfat, binfmt_misc, sunrpc and ublk_drv. Export these symbols without namespace, like mainline does.
+---
+ fs/Makefile     | 4 ----
+ kernel/Makefile | 4 ----
+ 2 files changed, 8 deletions(-)
+
+diff --git a/fs/Makefile b/fs/Makefile
+index 9f5d06f4a..6176181fe 100644
+--- a/fs/Makefile
++++ b/fs/Makefile
+@@ -6,11 +6,7 @@
+ # Rewritten to use lists instead of if-statements.
+ # 
+ 
+-ifdef CONFIG_GKI_HACKS_TO_FIX
+-subdir-ccflags-y += -DANDROID_GKI_VFS_EXPORT_ONLY=VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver
+-else
+ subdir-ccflags-y += -DANDROID_GKI_VFS_EXPORT_ONLY=""
+-endif
+ 
+ obj-y :=	open.o read_write.o file_table.o super.o \
+ 		char_dev.o stat.o exec.o pipe.o namei.o fcntl.o \
+diff --git a/kernel/Makefile b/kernel/Makefile
+index a610785c2..317b380a9 100644
+--- a/kernel/Makefile
++++ b/kernel/Makefile
+@@ -3,11 +3,7 @@
+ # Makefile for the linux kernel.
+ #
+ 
+-ifdef CONFIG_GKI_HACKS_TO_FIX
+-CFLAGS_cred.o = -DANDROID_GKI_VFS_EXPORT_ONLY=VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver
+-else
+ CFLAGS_cred.o = -DANDROID_GKI_VFS_EXPORT_ONLY=""
+-endif
+ obj-y     = fork.o exec_domain.o panic.o \
+ 	    cpu.o exit.o softirq.o resource.o \
+ 	    sysctl.o capability.o ptrace.o user.o \
+-- 
+Armbian
+

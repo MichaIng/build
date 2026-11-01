@@ -1,0 +1,33 @@
+From 7e2c50a218019315f307de4c07d3f975bd9e909e Mon Sep 17 00:00:00 2001
+From: MichaIng <micha@dietpi.com>
+Date: Tue, 3 Nov 2026 17:03:59 +0100
+Subject: [PATCH] drivers: probe cpu_info before clk
+
+Built into the kernel, link order defines the order of initcalls within the same level. The S7D clock driver queries the chip revision via get_meson_cpu_version() during probe, which prints a warning with stack trace and returns an error, when the cpu_info driver did not probe yet. cpu_info requires only secmon, so link it right after secmon, before clk. As loadable modules, this has no effect.
+---
+ drivers/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/Makefile b/drivers/Makefile
+index ba30d83..f3f1258 100644
+--- a/drivers/Makefile
++++ b/drivers/Makefile
+@@ -16,6 +16,7 @@ obj-y					+= debug/
+ obj-y					+= tty/
+ obj-$(CONFIG_AMLOGIC_HWSPINLOCK)	+= hwspinlock/
+ obj-$(CONFIG_AMLOGIC_SECMON)		+= secmon/
++obj-$(CONFIG_AMLOGIC_CPU_INFO)		+= cpu_info/
+ obj-y					+= memory_ext/
+ obj-$(CONFIG_AMLOGIC_MEMORY_DEBUG)	+= memory_debug/
+ obj-y					+= clk/
+@@ -25,7 +26,6 @@ obj-y					+= pwm/
+ obj-$(CONFIG_AMLOGIC_REGULATOR)		+= regulator/
+ obj-$(CONFIG_RESET_CONTROLLER)		+= reset/
+ obj-y					+= power/
+-obj-$(CONFIG_AMLOGIC_CPU_INFO)		+= cpu_info/
+ obj-$(CONFIG_CPU_FREQ)			+= cpufreq/
+ obj-$(CONFIG_THERMAL)			+= thermal/
+ obj-y					+= mmc/
+-- 
+2.43.0
+
