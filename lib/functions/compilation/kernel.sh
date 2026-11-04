@@ -122,7 +122,11 @@ function kernel_prepare_build_and_package() {
 	declare -a install_make_params_quoted
 	declare -A kernel_install_dirs
 
-	build_targets_build=("all") # "All" builds the vmlinux/Image/Image.gz default for the ${ARCH}
+	if [[ "${ARCH}" == "arm64" && "${KERNEL_BUILD_DTBS:-yes}" != "yes" ]]; then
+		build_targets_build=("vmlinux" "modules") # "all" without "dtbs"
+	else
+		build_targets_build=("all") # "All" builds the vmlinux/Image/Image.gz default for the ${ARCH}
+	fi
 	build_targets_build+=("${KERNEL_IMAGE_TYPE}")
 	declare cleanup_id="" kernel_dest_install_dir=""
 	prepare_temp_dir_in_workdir_and_schedule_cleanup "kernel_dest_install_dir" cleanup_id kernel_dest_install_dir # namerefs
