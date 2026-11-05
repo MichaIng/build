@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MichaIng <micha@dietpi.com>
+Date: Thu, 5 Nov 2026 18:00:00 +0100
+Subject: rtc: rv8803: add ACPI support for RX8900
+
+Bind the RX8900 RTC of CIX P1 boards, enumerated via ACPI as RX008900.
+---
+ drivers/rtc/rtc-rv8803.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/rtc/rtc-rv8803.c b/drivers/rtc/rtc-rv8803.c
+index 111111111111..222222222222 100644
+--- a/drivers/rtc/rtc-rv8803.c
++++ b/drivers/rtc/rtc-rv8803.c
+@@ -667,13 +667,7 @@ static int rv8803_probe(struct i2c_client *client)
+ 
+ 	mutex_init(&rv8803->flags_lock);
+ 	rv8803->client = client;
+-	if (client->dev.of_node) {
+-		rv8803->type = (uintptr_t)of_device_get_match_data(&client->dev);
+-	} else {
+-		const struct i2c_device_id *id = i2c_match_id(rv8803_id, client);
+-
+-		rv8803->type = id->driver_data;
+-	}
++	rv8803->type = (uintptr_t)i2c_get_match_data(client);
+ 	i2c_set_clientdata(client, rv8803);
+ 
+ 	flags = rv8803_read_reg(client, RV8803_FLAG);
+@@ -763,11 +757,18 @@ static const __maybe_unused struct of_device_id rv8803_of_match[] = {
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, rv8803_of_match);
++
++static const struct acpi_device_id rv8803_acpi_match[] = {
++	{ "RX008900", rx_8900 },
++	{ }
++};
++MODULE_DEVICE_TABLE(acpi, rv8803_acpi_match);
+ 
+ static struct i2c_driver rv8803_driver = {
+ 	.driver = {
+ 		.name = "rtc-rv8803",
+ 		.of_match_table = of_match_ptr(rv8803_of_match),
++		.acpi_match_table = rv8803_acpi_match,
+ 		.pm = &rv8803_pm_ops,
+ 	},
+ 	.probe		= rv8803_probe,
+--
+2.53.0
+
