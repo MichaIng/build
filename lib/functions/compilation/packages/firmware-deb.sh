@@ -94,6 +94,12 @@ function compile_firmware() {
 	run_host_command_logged ln -sTv SYN43711A0.hcd "${fw_temp_dir}/${fw_dir}"/lib/firmware/brcm/BCM.xunlong,orangepi-5-max.hcd
 	run_host_command_logged ln -sTv SYN43711A0.hcd "${fw_temp_dir}/${fw_dir}"/lib/firmware/brcm/BCM.xunlong,orangepi-5-ultra.hcd
 
+	# Add RTL8761[BC]U USB Bluetooth firmware
+	run_host_command_logged wget 'https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/rtl_bt/rtl8761bu_fw.bin' -O "${fw_temp_dir}/${fw_dir}"/lib/firmware/rtl_bt/rtl8761bu_fw.bin
+	run_host_command_logged wget 'https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/rtl_bt/rtl8761bu_config.bin' -O "${fw_temp_dir}/${fw_dir}"/lib/firmware/rtl_bt/rtl8761bu_config.bin
+	run_host_command_logged wget 'https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/rtl_bt/rtl8761cu_fw.bin' -O "${fw_temp_dir}/${fw_dir}"/lib/firmware/rtl_bt/rtl8761cu_fw.bin
+	run_host_command_logged wget 'https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/rtl_bt/rtl8761cu_config.bin' -O "${fw_temp_dir}/${fw_dir}"/lib/firmware/rtl_bt/rtl8761cu_config.bin
+
 	# Show the size of the firmware directory in a tree if debugging
 	if [[ "${SHOW_DEBUG}" == "yes" ]]; then
 		run_host_command_logged tree -C --du -h -L 1 "${fw_temp_dir}/${fw_dir}"/lib/firmware "|| true" # do not fail
