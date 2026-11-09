@@ -1,0 +1,3 @@
+**meson-gxbb-odroidc2-hifishield**
+Enables the Hardkernel HiFi-Shield / HiFi-Shield+ (PCM5102A DAC) on the ODROID-C2.
+The DAC plays from the I2S PCM device alongside HDMI. The optical output is a separate S/PDIF PCM device.
