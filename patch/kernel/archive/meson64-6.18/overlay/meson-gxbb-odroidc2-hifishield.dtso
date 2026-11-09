@@ -1,0 +1,87 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * ODROID-C2 with the Hardkernel HiFi-Shield / HiFi-Shield+ mezzanine board.
+ *
+ * The board carries a TI PCM5102A I2S DAC, fed from the J7 audio header, and
+ * an optical S/PDIF output on GPIOAO_6. The PCM5102A is hardware-configured
+ * and has no control interface, so it's a plain platform codec at the root,
+ * not an I2C device.
+ *
+ * Based on meson-gxbb-odroidc2-hifishield.dts from
+ * https://github.com/chewitt/linux/tree/amlogic-7.3.y, adapted to the
+ * mainline ODROID-C2 sound card, which has only the I2S FIFO, I2S encoder and
+ * HDMI codec control links (no S/PDIF links, single-DAI hdmi_tx).
+ */
+
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/sound/meson-aiu.h>
+
+&{/} {
+	pcm5102a: audio-codec-pcm5102a {
+		compatible = "ti,pcm5102a";
+		#sound-dai-cells = <0>;
+	};
+
+	spdif_dit: audio-codec-spdif-dit {
+		compatible = "linux,spdif-dit";
+		#sound-dai-cells = <0>;
+		sound-name-prefix = "DIT";
+	};
+};
+
+&{/sound} {
+	/*
+	 * libfdt (U-Boot "fdt apply", fdtoverlay) inserts each new node in
+	 * front of the existing ones, so new nodes end up first and in reverse
+	 * order. The card numbers its PCM devices by node order. To keep the
+	 * I2S frontend at PCM device 0 like in the base dtb, the two frontends
+	 * are new nodes listed here in reverse order, and the existing
+	 * dai-link-0 is repurposed as the S/PDIF encoder backend.
+	 * Resulting order:
+	 *   dai-link-4: I2S FIFO frontend      -> PCM device 0
+	 *   dai-link-3: S/PDIF FIFO frontend   -> PCM device 1
+	 *   dai-link-0: S/PDIF encoder backend -> optical out
+	 *   dai-link-1: I2S encoder backend    -> HDMI + PCM5102A
+	 *   dai-link-2: HDMI codec control backend
+	 */
+	dai-link-3 {
+		sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
+	};
+
+	dai-link-4 {
+		sound-dai = <&aiu AIU_CPU CPU_I2S_FIFO>;
+	};
+
+	dai-link-0 {
+		sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
+
+		codec-0 {
+			sound-dai = <&spdif_dit>;
+		};
+	};
+
+	dai-link-1 {
+		codec-1 {
+			sound-dai = <&pcm5102a>;
+		};
+	};
+};
+
+&aiu {
+	pinctrl-0 = <&spdif_out_ao_6_pins>, <&i2s_am_clk_pins>,
+		    <&i2s_out_ao_clk_pins>, <&i2s_out_lr_clk_pins>,
+		    <&i2s_out_ch01_ao_pins>;
+	pinctrl-names = "default";
+};
+
+&gpio_ao {
+	gpio-line-names = "UART TX", "UART RX", "VCCK En", "TF 3V3/1V8 En",
+			  "USB HUB nRESET", "USB OTG Power En",
+			  "SPDIF_OUTPUT", "IR In", "I2S_MCLK",
+			  "I2S_SCLK", "I2S_LRCLK", "I2S_DATA_OUTPUT",
+			  "HDMI CEC", "SYS LED",
+			  /* GPIO_TEST_N */
+			  "";
+};
