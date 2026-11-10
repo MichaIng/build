@@ -1,0 +1,8 @@
+Activates the LeMaker 5" RGB LCD (800x480) with FT5x06 touch on the LCD
+connector of the LeMaker Banana Pro
+
+Uses pins PD0-PD27 (RGB), PB2 (PWM0 backlight), PH8 (backlight enable),
+PH12 (panel power), PI0/PI1 (I2C3), PH9 (touch IRQ), PH7 (touch reset)
+
+Pixel clock 29.7 MHz, so the LCD can be used together with HDMI in 1080p
+or 720p (see lemaker-lcd7-hdmi)
