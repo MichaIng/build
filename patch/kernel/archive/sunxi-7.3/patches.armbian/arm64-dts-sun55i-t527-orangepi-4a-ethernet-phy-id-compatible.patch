@@ -1,0 +1,37 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MichaIng <micha@dietpi.com>
+Date: Wed, 11 Nov 2026 20:30:00 +0100
+Subject: arm64: dts: allwinner: t527-orangepi-4a: add PHY ID compatible
+
+The YT8531 PHY is powered via phy-supply (cldo4), which the MAC driver
+enables right before the MDIO bus is registered, and its reset line is
+only handled once the PHY device exists. With the generic C22 compatible,
+the PHY ID is read from a PHY which is still powering up or in reset. The
+read randomly returns 0xffff (no PHY device, "cannot attach to PHY (error:
+-ENODEV)"), 0x0 (Generic PHY bound instead of YT8531) or the correct ID.
+
+Add the explicit PHY ID compatible, so the PHY device is created without
+reading the ID, and the reset sequence runs before the PHY driver probes.
+
+Signed-off-by: MichaIng <micha@dietpi.com>
+---
+ arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts b/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
+index 111111111111..222222222222 100644
+--- a/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
+@@ -121,7 +121,8 @@ &gpu {
+ 
+ &mdio1 {
+ 	ext_rgmii_phy: ethernet-phy@1 {
+-		compatible = "ethernet-phy-ieee802.3-c22";
++		compatible = "ethernet-phy-id4f51.e91b",
++			     "ethernet-phy-ieee802.3-c22";
+ 		reg = <1>;
+ 		interrupts-extended = <&pio 8 16 IRQ_TYPE_LEVEL_LOW>; /* PI16 */
+ 		reset-gpios = <&pio 8 15 GPIO_ACTIVE_LOW>; /* PI15 */
+-- 
+Armbian
+
