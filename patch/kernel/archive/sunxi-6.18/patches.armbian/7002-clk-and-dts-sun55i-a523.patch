@@ -764,23 +764,23 @@ index 111111111111..222222222222 100644
 +
 +		/*
 +		 * The display engine's layer DMA master has a limited fetch
-+		 * aperture and can only reach low DRAM (it reads the RCQ pool at
-+		 * ~0x43000000 but not 0x4b100000). The kernel's default CMA is
-+		 * high (~0xf0000000), so scanout fetches zeros (black). Ideally
-+		 * this pool should be pinned low just above the kernel image
-+		 * (ends ~0x42c70000) and the RCQ pool (~0x43000000), below the
-+		 * dtb (~0x49ff6000); that is NOT guaranteed without reg and
-+		 * alloc-ranges. HDMI output on this board is untested.
++		 * aperture and can only reach low DRAM. Unpinned, the default
++		 * CMA pool ends up above 4 GiB on 4 GiB boards, and the DRM
++		 * framebuffer allocation fails with -ENOMEM. Pin it low like on
++		 * the other boards. HDMI output tested on an Orange Pi 4A with
++		 * 4 GiB RAM at 2560x1440.
 +		 */
 +		linux,cma {
 +			compatible = "shared-dma-pool";
 +			reusable;
-+			size = <0x0 0x10000000>;
++			reg = <0x0 0x43000000 0x0 0x5000000>;
++			alloc-ranges = <0x0 0x43000000 0x0 0x5000000>;
++			size = <0x0 0x5000000>;
 +			linux,cma-default;
 +		};
 +	};
 +
-+	/* HDMI output is enabled but not yet validated on this board. */
++	/* HDMI output tested at 2560x1440 on a 4 GiB board. */
 +	hdmi-connector {
 +		compatible = "hdmi-connector";
 +		type = "a";
