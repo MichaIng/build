@@ -1,0 +1,49 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MichaIng <micha@dietpi.com>
+Date: Fri, 13 Nov 2026 00:00:00 +0100
+Subject: arm64: dts: rockchip: radxa-zero-3w: drive WiFi antenna switch
+
+Mainline drives no RF switch line. The antenna selection is undefined.
+Select the onboard antenna by default. Add a disabled node for the
+u.FL connector, which the rk35xx-radxa-zero-3w-ext-ant overlay enables.
+
+Link: https://github.com/MichaIng/DietPi/issues/8493
+---
+ arch/arm64/boot/dts/rockchip/rk3566-radxa-zero-3w.dts | 21 ++++++++++
+ 1 file changed, 21 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-radxa-zero-3w.dts b/arch/arm64/boot/dts/rockchip/rk3566-radxa-zero-3w.dts
+index 111111111111..222222222222 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-radxa-zero-3w.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-radxa-zero-3w.dts
+@@ -26,6 +26,27 @@
+ 	};
+ };
+ 
++&gpio3 {
++	/*
++	 * RF switch: RF1_EN (GPIO3_D3) low and RF2_EN (GPIO3_D2) high select
++	 * the onboard antenna. The inverse levels select the u.FL connector.
++	 */
++	board_antenna: board-antenna-hog {
++		gpio-hog;
++		gpios = <RK_PD3 GPIO_ACTIVE_LOW>, <RK_PD2 GPIO_ACTIVE_HIGH>;
++		output-high;
++		line-name = "board-antenna";
++	};
++
++	external_antenna: external-antenna-hog {
++		gpio-hog;
++		gpios = <RK_PD2 GPIO_ACTIVE_LOW>, <RK_PD3 GPIO_ACTIVE_HIGH>;
++		output-high;
++		line-name = "external-antenna";
++		status = "disabled";
++	};
++};
++
+ &pinctrl {
+ 	bluetooth {
+ 		bt_reg_on_h: bt-reg-on-h {
+-- 
+Armbian
+

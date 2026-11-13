@@ -87,6 +87,14 @@ function compile_firmware() {
 	# Remove unused firmware, mostly for certain laptops, smartphones, and handhelds
 	run_host_command_logged rm -R "${fw_temp_dir}/${fw_dir}"/lib/firmware/{adsp*,airoha,ath10k/WCN3990,ath12k,awinic,cirrus,nanosic,novatek,nvidia,qca,qcom,renesas_usb_fw.mem,seekwave}
 
+	# Replace AIC8800 SDIO firmware with the Radxa firmware. The in-tree AIC8800 SDIO driver comes from the same repo.
+	run_host_command_logged rm -R "${fw_temp_dir}/${fw_dir}"/lib/firmware/aic8800/SDIO
+	run_host_command_logged mkdir "${fw_temp_dir}/${fw_dir}"/lib/firmware/aic8800/SDIO
+	declare fetched_revision
+	do_checkout="no" fetch_from_repo "https://github.com/radxa-pkg/aic8800" "aic8800-firmware-git" "branch:main"
+	run_host_command_logged git -C "${SRC}/cache/sources/aic8800-firmware-git" archive --format=tar "${fetched_revision}" src/SDIO/driver_fw/fw "|" tar -C "${fw_temp_dir}/${fw_dir}/lib/firmware/aic8800/SDIO/" --strip-components=4 -xf -
+	run_host_command_logged rm -f "${fw_temp_dir}/${fw_dir}"/lib/firmware/aic8800/SDIO/*.7z
+
 	# Add symlink for Xunlong sun60iw2 in-tree AIC8800 driver
 	run_host_command_logged ln -sTv aic8800/SDIO/aic8800D80 "${fw_temp_dir}/${fw_dir}"/lib/firmware/aic8800d80
 
