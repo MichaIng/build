@@ -1,0 +1,5 @@
+### rk35xx-radxa-zero-3w-ext-ant
+
+The Radxa ZERO 3W selects its onboard WiFi/Bluetooth antenna by default.
+Connect an external antenna to the u.FL connector and select it with
+this overlay.
