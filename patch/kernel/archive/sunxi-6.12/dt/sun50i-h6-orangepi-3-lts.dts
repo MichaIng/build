@@ -205,6 +205,7 @@
 	status = "okay";
 	bus-width = <4>;
 	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>; /* PF6 */
+	broken-cd;
 	vmmc-supply = <&reg_cldo1>;
 };
 
