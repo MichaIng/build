@@ -1,0 +1,96 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MichaIng <micha@dietpi.com>
+Date: Fri, 20 Nov 2026 18:00:00 +0100
+Subject: arm64: dts: orangepizero4: apply the Orange Pi Zero 3W board fixes
+
+The vendor Orange Pi Zero 4 device tree is a copy of the Zero 3W one
+(plus Ethernet, IR receiver and a different fan PWM channel), and it
+inherited the same issues the Zero 3W patches fix:
+
+- Set a proper model and board-specific compatible; the vendor tree
+  still claims "xunlong,orangepi-4-pro".
+- Pin dcdc4 (gpu-supply, its only consumer) to 960 mV, the OPP voltage
+  for the 1008 MHz GPU clk_rate the shared sun60iw2p1.dtsi now sets.
+  pvrsrvkm never applies the OPP voltage, so without this the GPU runs
+  at 1008 MHz on the 800 mV power-on default.
+- Keep bldo2 (VCC_3V3_CSI) always on, so the unused-regulator sweep
+  does not cut power to the CSI cameras ~30s after boot.
+- Enable the SoC RTC and disable the external hym8563 inherited from
+  the Orange Pi 4 Pro device tree, which is not populated on the Zero
+  boards.
+
+The regulator nodes are identical to the Zero 3W ones. The RTC change
+assumes the Zero 4 has no external RTC either, like the Zero 3W; no
+schematic was available yet to confirm it.
+---
+ arch/arm64/boot/dts/allwinner/sun60i-a733-orangepi-zero4.dts | 25 ++++++++++++++++------
+ 1 file changed, 19 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun60i-a733-orangepi-zero4.dts b/arch/arm64/boot/dts/allwinner/sun60i-a733-orangepi-zero4.dts
+index 0e4ee67..5491bb4 100644
+--- a/arch/arm64/boot/dts/allwinner/sun60i-a733-orangepi-zero4.dts
++++ b/arch/arm64/boot/dts/allwinner/sun60i-a733-orangepi-zero4.dts
+@@ -6,7 +6,8 @@
+ //#define TYPEC_DP 1
+ /{
+ 	board = "A733";
+-	compatible = "xunlong,orangepi-4-pro", "arm,sun60iw2p1";
++	model = "Orange Pi Zero 4";
++	compatible = "xunlong,orangepi-zero4", "arm,sun60iw2p1";
+ 	aliases {
+ 		arisc-config = &arisc_config;
+ 		pmu0 = &pmu0;
+@@ -2104,8 +2105,14 @@ reg_dcdc3: dcdc3 {
+ 			};
+ 			reg_dcdc4: dcdc4 {
+ 				regulator-name = "axp8191-dcdc4";
+-				regulator-min-microvolt = <500000>;
+-				regulator-max-microvolt = <1540000>;
++				/*
++				 * gpu-supply is the only consumer of this rail. Pin it to
++				 * the 960 mV the gpu-opp-table lists for the 1008 MHz
++				 * step (clk_rate in sun60iw2p1.dtsi): pvrsrvkm is built
++				 * without DVFS and never applies the OPP voltage itself.
++				 */
++				regulator-min-microvolt = <960000>;
++				regulator-max-microvolt = <960000>;
+ 				regulator-ramp-delay = <250>;
+ 				regulator-enable-ramp-delay = <1000>;
+ 				regulator-boot-on;
+@@ -2209,6 +2216,12 @@ reg_bldo1: bldo1 {
+ 				regulator-enable-ramp-delay = <1000>;
+ 			};
+ 			reg_bldo2: bldo2 {
++				/*
++				 * VCC_3V3_CSI for the CSI camera connectors. No DT
++				 * consumer references it, so the unused-regulator sweep
++				 * would power it down ~30s after boot.
++				 */
++				regulator-always-on;
+ 				regulator-name = "axp8191-bldo2";
+ 				regulator-min-microvolt = <500000>;
+ 				regulator-max-microvolt = <3400000>;
+@@ -2525,9 +2538,9 @@ virtual-dc1sw2 {
+ 	};
+ };
+ 
+-/*Disable soc rtc*/
++/* SoC RTC (rtc-v201): the working on-die RTC for this board */
+ &rtc {
+-	status = "disabled";
++	status = "okay";
+ };
+ 
+ &s_twi1 {
+@@ -2638,7 +2651,7 @@ rtc@51 {
+  		clock-output-names = "xin32k";
+  		//interrupt-parent = <&pio>;
+  		//interrupts = <PD 6 IRQ_TYPE_NONE>;
+-		status = "okay";
++		status = "disabled";
+  	};
+ 
+ 	ac101: ac101@1a {
+-- 
+Armbian
+
