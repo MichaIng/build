@@ -14,9 +14,19 @@ but cap at 512 entries — not CONFIG GPT_ENTRY_NUMBERS (64 on Radxa) —
 so Armbian/mainline 128-entry GPTs still validate. Keep PTE reuse
 shortcut required by CONFIG_SPL_SYS_MALLOC_SIMPLE.
 
---- a/disk/part_efi.c	2026-07-21 17:39:42.622243863 +0200
-+++ b/disk/part_efi.c	2026-07-21 17:39:42.622243863 +0200
-@@ -140,6 +140,21 @@
+Removing that block alone made part_test_efi() accept every disk,
+though: mainline's probe relies on is_pmbr_valid() checking for the
+0xEE protective MBR entry, but Rockchip patched it to always return 1
+(for their SD update cards carrying an MS-DOS table plus GPT). The GPT
+driver is probed first, so MS-DOS partitioned media were never handed
+to part_dos and failed to boot. Restore mainline's is_pmbr_valid() and
+additionally require a valid primary or backup GPT header (header only,
+no PTE reads, no repair), so a leftover protective MBR without usable
+GPT falls through to the other partition drivers.
+
+--- a/disk/part_efi.c
++++ b/disk/part_efi.c
+@@ -140,6 +140,21 @@ static int validate_gpt_header(gpt_header *gpt_h, lbaint_t lba,
  		return -1;
  	}
  
@@ -38,7 +48,7 @@ shortcut required by CONFIG_SPL_SYS_MALLOC_SIMPLE.
  	debug("GPT: first_usable_lba: %llX last_usable_lba: %llX last lba: "
  	      LBAF "\n", le64_to_cpu(gpt_h->first_usable_lba),
  	      le64_to_cpu(gpt_h->last_usable_lba), lastlba);
-@@ -373,17 +388,21 @@
+@@ -373,17 +388,21 @@ int part_get_info_efi(struct blk_desc *dev_desc, int part,
  
  #ifdef CONFIG_RKIMG_BOOTLOADER
  #if defined(CONFIG_SPL_KERNEL_BOOT) || !defined(CONFIG_SPL_BUILD)
@@ -62,7 +72,7 @@ shortcut required by CONFIG_SPL_SYS_MALLOC_SIMPLE.
  	if (dev_desc->rawblksz == 4096) {
  		if (gpt_pte[i - 1].ending_lba <= (dev_desc->rawlba - 6))
  			return;
-@@ -400,7 +419,7 @@
+@@ -400,7 +419,7 @@ static void gpt_entry_modify(struct blk_desc *dev_desc,
  	gpt_head->partition_entry_array_crc32 = calc_crc32;
  }
  
@@ -71,7 +81,7 @@ shortcut required by CONFIG_SPL_SYS_MALLOC_SIMPLE.
  			   gpt_header *gpt_head, int head_gpt_valid,
  			   int backup_gpt_valid)
  {
-@@ -504,57 +523,13 @@
+@@ -504,57 +523,31 @@ static int part_test_efi(struct blk_desc *dev_desc)
  		|| (is_pmbr_valid(legacymbr) != 1)) {
  		return -1;
  	}
@@ -103,7 +113,22 @@ shortcut required by CONFIG_SPL_SYS_MALLOC_SIMPLE.
 -		/* Force repair backup GPT for factory or ota upgrade. */
 -		backup_gpt_valid = 0;
 -	}
--
++	/*
++	 * Downstream CONFIG_RKIMG_BOOTLOADER used to validate/repair GPT
++	 * during every part_init() (including SCSI/UFS scan). That path
++	 * crashes on some media, and probing must not write to the disk.
++	 * Instead, like mainline, require a protective MBR (checked above),
++	 * and additionally a valid primary or backup GPT header, so that a
++	 * leftover protective MBR without usable GPT falls through to the
++	 * other partition drivers. Only the header is checked here; the
++	 * entry arrays are validated in part_get_info_efi() on use.
++	 */
++	{
++		ALLOC_CACHE_ALIGN_BUFFER_PAD(gpt_header, gpt_h, 1, dev_desc->rawblksz);
++		int sector = dev_desc->rawblksz / dev_desc->blksz;
++		lbaint_t lba[] = { GPT_PRIMARY_PARTITION_TABLE_LBA, dev_desc->rawlba - 1 };
++		int i;
+ 
 -	if (head_gpt_valid == 1 && backup_gpt_valid == 0) {
 -		if (part_efi_repair(dev_desc, h_gpt_pte, h_gpt_head,
 -				    head_gpt_valid, backup_gpt_valid))
@@ -113,8 +138,15 @@ shortcut required by CONFIG_SPL_SYS_MALLOC_SIMPLE.
 -				    head_gpt_valid, backup_gpt_valid))
 -			printf("Primary GPT repair fail!\n");
 -	} else if (head_gpt_valid == 0 && backup_gpt_valid == 0) {
--		ret = -1;
--	}
+ 		ret = -1;
++		for (i = 0; i < ARRAY_SIZE(lba); i++) {
++			if (blk_dread(dev_desc, lba[i] * sector, sector, gpt_h) == sector &&
++			    !validate_gpt_header(gpt_h, lba[i], dev_desc->rawlba)) {
++				ret = 0;
++				break;
++			}
++		}
+ 	}
 -
 -	free(h_gpt_pte);
 -	h_gpt_pte = NULL;
@@ -126,17 +158,29 @@ shortcut required by CONFIG_SPL_SYS_MALLOC_SIMPLE.
 -	b_gpt_head = NULL;
 -#endif
 -#endif
-+	/*
-+	 * Mainline U-Boot only checks the protective MBR here. Downstream
-+	 * CONFIG_RKIMG_BOOTLOADER used to validate/repair GPT during every
-+	 * part_init() (including SCSI/UFS scan). That path crashes on some
-+	 * media and is unnecessary for normal boot — GPT is validated later
-+	 * in part_get_info_efi() when partitions are actually used.
-+	 */
  	return ret;
  }
  
-@@ -1270,14 +1245,17 @@
+@@ -1147,18 +1140,6 @@ static int is_pmbr_valid(legacy_mbr * mbr)
+ {
+ 	int i = 0;
+ 
+-#ifdef CONFIG_ARCH_ROCKCHIP
+-	/*
+-	 * In sd-update card, we use RKPARM partition in bootloader to load
+-	 * firmware, and use MS-DOS partition in recovery to update system.
+-	 * Now, we want to use gpt in bootloader and abandon the RKPARM
+-	 * partition. So in new sd-update card, we write the MS-DOS partition
+-	 * table and gpt to sd card. Then we must return 1 directly when test
+-	 * the mbr sector otherwise the gpt is unavailable.
+-	 */
+-	return 1;
+-#endif
+-
+ 	if (!mbr || le16_to_cpu(mbr->signature) != MSDOS_MBR_SIGNATURE)
+ 		return 0;
+ 
+@@ -1270,14 +1251,17 @@ static gpt_entry *alloc_read_gpt_entries(struct blk_desc *dev_desc,
  	      (u32) le32_to_cpu(pgpt_head->sizeof_partition_entry),
  	      (ulong)count);
  
