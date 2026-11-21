@@ -892,6 +892,13 @@ function armbian_kernel_config__enable_asus_keyboard() {
 	opts_m+=('HID_ASUS')
 }
 
+# Enable HID multitouch driver for all boards
+# Required by USB touchscreens with multi-contact HID reports, e.g. most HDMI+USB touch displays (Elecrow, Waveshare, QDtech, ...).
+# Without it, hid-generic binds and maps all contacts to the same axes, so the unused contact slots' maximum values move every touch to the lower-right corner.
+function armbian_kernel_config__enable_hid_multitouch() {
+	opts_m+=('HID_MULTITOUCH')
+}
+
 # Enable USB DVB receiver drivers
 function armbian_kernel_config__enable_usb_dvb() {
 	opts_y+=('MEDIA_DIGITAL_TV_SUPPORT')
