@@ -31,10 +31,11 @@ Subject: [ARCHEOLOGY] rockchip64-7.3: rk3528: add thermal driver
 > X-Git-Archeology:
 ---
  Documentation/devicetree/bindings/thermal/rockchip-thermal.yaml |  32 +-
+ arch/arm64/boot/dts/rockchip/rk3528-nanopi-zero2.dts            |   4 +
  arch/arm64/boot/dts/rockchip/rk3528-rock-2.dtsi                 |   4 +
  arch/arm64/boot/dts/rockchip/rk3528.dtsi                        |  79 +++++
  drivers/thermal/rockchip_thermal.c                              | 149 ++++++++++
- 4 files changed, 260 insertions(+), 4 deletions(-)
+ 5 files changed, 264 insertions(+), 4 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/thermal/rockchip-thermal.yaml b/Documentation/devicetree/bindings/thermal/rockchip-thermal.yaml
 index 111111111111..222222222222 100644
@@ -109,6 +110,21 @@ index 111111111111..222222222222 100644
                  - rockchip,rk3568-tsadc
                  - rockchip,rk3576-tsadc
      then:
+diff --git a/arch/arm64/boot/dts/rockchip/rk3528-nanopi-zero2.dts b/arch/arm64/boot/dts/rockchip/rk3528-nanopi-zero2.dts
+index 111111111111..222222222222 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3528-nanopi-zero2.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3528-nanopi-zero2.dts
+@@ -341,6 +341,10 @@ &sdmmc {
+ 	status = "okay";
+ };
+ 
++&tsadc {
++	status = "okay";
++};
++
+ &uart0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart0m0_xfer>;
 diff --git a/arch/arm64/boot/dts/rockchip/rk3528-rock-2.dtsi b/arch/arm64/boot/dts/rockchip/rk3528-rock-2.dtsi
 index 111111111111..222222222222 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3528-rock-2.dtsi
