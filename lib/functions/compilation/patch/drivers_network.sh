@@ -589,7 +589,8 @@ driver_uwe5622() {
 
 	# Wireless drivers for Unisoc uwe5622 wireless
 
-	if linux-version compare "${version}" ge 5.15 && [[ "$LINUXFAMILY" == sun* || "$LINUXFAMILY" == rockchip64 || "$LINUXFAMILY" == rk35xx ]]; then
+	# Not for rk35xx: The vendor Linux 6.1 does not export device_is_bound(), needed since https://github.com/armbian/uwe5622/commit/1520623, and none of its boards ship this chip.
+	if linux-version compare "${version}" ge 5.15 && [[ "$LINUXFAMILY" == sun* || "$LINUXFAMILY" == rockchip64 ]]; then
 
 		# Attach to specific commit
 		local uwe5622ver='commit:ef4ac088ae4cfb468843199e64d57589aacf22d0' # Commit date: Nov 22nd, 2026 (please update when updating commit ref)
