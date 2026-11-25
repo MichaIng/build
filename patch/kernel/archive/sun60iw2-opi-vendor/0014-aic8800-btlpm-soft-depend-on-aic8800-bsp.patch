@@ -1,0 +1,25 @@
+From: MichaIng <micha@dietpi.com>
+Subject: aic8800_btlpm: add soft dependency on aic8800_bsp
+
+aic8800_bsp powers the AIC8800 and loads the Bluetooth firmware patch via
+SDIO. It is pulled in as a dependency of the WiFi driver aic8800_fdrv, but
+aic8800_btlpm does not use any of its symbols. Hence, when WiFi is not used,
+loading aic8800_btlpm alone leaves the Bluetooth core without firmware patch,
+and it does not respond to HCI commands. Declare the soft dependency, so that
+modprobe loads aic8800_bsp first.
+
+Signed-off-by: MichaIng <micha@dietpi.com>
+---
+diff --git a/bsp/drivers/net/wireless/aic8800/aic8800_btlpm/aic8800_btlpm.c b/bsp/drivers/net/wireless/aic8800/aic8800_btlpm/aic8800_btlpm.c
+index 7ec7c91..ad02040 100644
+--- a/bsp/drivers/net/wireless/aic8800/aic8800_btlpm/aic8800_btlpm.c
++++ b/bsp/drivers/net/wireless/aic8800/aic8800_btlpm/aic8800_btlpm.c
+@@ -1226,6 +1226,8 @@ module_init(bluesleep_init);
+ module_exit(bluesleep_exit);
+ 
+ MODULE_DESCRIPTION("Bluetooth Sleep Mode Driver ver %s " VERSION);
++/* The Bluetooth firmware patch is loaded by aic8800_bsp, also when WiFi (aic8800_fdrv) is not used */
++MODULE_SOFTDEP("pre: aic8800_bsp");
+ #ifdef MODULE_LICENSE
+ MODULE_LICENSE("GPL");
+ #endif
