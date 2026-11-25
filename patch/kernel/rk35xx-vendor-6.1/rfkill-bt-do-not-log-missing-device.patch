@@ -1,0 +1,22 @@
+From: MichaIng <micha@dietpi.com>
+Subject: net: rfkill: rfkill-bt: do not log a missing rfkill-bt device
+
+rfkill-wlan queries the Bluetooth power state on every WiFi power change. On
+boards where Bluetooth is handled via serdev instead, the rfkill-bt device is
+intentionally disabled, so do not log this at info level.
+
+Signed-off-by: MichaIng <micha@dietpi.com>
+---
+diff --git a/net/rfkill/rfkill-bt.c b/net/rfkill/rfkill-bt.c
+index a5ef9b706ee5..c984d12d29ad 100644
+--- a/net/rfkill/rfkill-bt.c
++++ b/net/rfkill/rfkill-bt.c
+@@ -291,7 +291,7 @@ int rfkill_get_bt_power_state(int *power, bool *toggle)
+ 	struct rfkill_rk_data *mrfkill = g_rfkill;
+ 
+ 	if (!mrfkill) {
+-		LOG("%s: rfkill-bt driver has not Successful initialized\n",
++		DBG("%s: rfkill-bt driver has not Successful initialized\n",
+ 		    __func__);
+ 		return -1;
+ 	}

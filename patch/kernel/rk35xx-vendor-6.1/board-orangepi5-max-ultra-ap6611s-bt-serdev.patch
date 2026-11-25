@@ -1,0 +1,97 @@
+From: MichaIng <micha@dietpi.com>
+Subject: arm64: dts: rockchip: orangepi-5-max/ultra: attach AP6611S Bluetooth via serdev
+
+Let hci_bcm handle BT_REG_ON, BT_WAKE, BT_HOST_WAKE, the firmware patch and the
+baud rate via a complete serdev node on uart7, instead of the Rockchip rfkill-bt
+driver plus a userland attach tool like brcm_patchram_plus or hciattach. This
+also gives uart7 its RTS pin back, which was assigned to the rfkill-bt node.
+
+Signed-off-by: MichaIng <micha@dietpi.com>
+---
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-max.dts b/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-max.dts
+index 440b928ceed6..46a649baae89 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-max.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-max.dts
+@@ -380,7 +380,7 @@
+ 		BT,reset_gpio    = <&gpio4 RK_PC4 GPIO_ACTIVE_HIGH>;
+ 		BT,wake_gpio     = <&gpio4 RK_PC5 GPIO_ACTIVE_HIGH>;
+ 		BT,wake_host_irq = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
+-		status = "okay";
++		status = "disabled";
+ 	};
+ 
+ 	wireless_wlan: wireless-wlan {
+@@ -1285,16 +1285,26 @@
+ &uart7 {
+ 	status = "okay";
+ 	pinctrl-names = "default";
+-	pinctrl-0 = <&uart7m0_xfer &uart7m0_ctsn>;
++	pinctrl-0 = <&uart7m0_xfer &uart7m0_ctsn &uart7m0_rtsn>;
++	uart-has-rtscts;
+ 
+ 	/*
+-	 * On-board AP6611S (SYN43711) combo: WiFi is on SDIO, Bluetooth is
+-	 * wired to uart7m0 (TX/RX/CTS), with BT_REG_ON/BT_WAKE handled by
+-	 * the "wireless-bluetooth" (rfkill-bt) node.  Attach the HCI
+-	 * transport in-kernel so hci_bcm/btbcm download the patchram.
++	 * On-board AP6611S (SYN43711) combo: WiFi is on SDIO, Bluetooth on uart7m0.
++	 * Let serdev/hci_bcm handle power, wake GPIOs, firmware patch and baud rate,
++	 * instead of the Rockchip rfkill-bt driver plus a userland attach tool.
+ 	 */
+ 	bluetooth {
+ 		compatible = "brcm,bcm43438-bt";
++		clocks = <&hym8563>;
++		clock-names = "lpo";
++		max-speed = <1500000>;
++		shutdown-gpios = <&gpio4 RK_PC4 GPIO_ACTIVE_HIGH>;
++		device-wakeup-gpios = <&gpio4 RK_PC5 GPIO_ACTIVE_HIGH>;
++		interrupt-parent = <&gpio0>;
++		interrupts = <RK_PA0 IRQ_TYPE_EDGE_FALLING>;
++		interrupt-names = "host-wakeup";
++		pinctrl-names = "default";
++		pinctrl-0 = <&bt_reset_gpio>, <&bt_wake_gpio>, <&bt_irq_gpio>;
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-ultra.dts b/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-ultra.dts
+index 65d8a401ccb7..5f43a43a6cd8 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-ultra.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-ultra.dts
+@@ -395,7 +395,7 @@
+ 		BT,reset_gpio    = <&gpio4 RK_PC4 GPIO_ACTIVE_HIGH>;
+ 		BT,wake_gpio     = <&gpio4 RK_PC5 GPIO_ACTIVE_HIGH>;
+ 		BT,wake_host_irq = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
+-		status = "okay";
++		status = "disabled";
+ 	};
+ 
+ 	wireless_wlan: wireless-wlan {
+@@ -1320,7 +1320,27 @@
+ &uart7 {
+ 	status = "okay";
+ 	pinctrl-names = "default";
+-	pinctrl-0 = <&uart7m0_xfer &uart7m0_ctsn>;
++	pinctrl-0 = <&uart7m0_xfer &uart7m0_ctsn &uart7m0_rtsn>;
++	uart-has-rtscts;
++
++	/*
++	 * On-board AP6611S (SYN43711) combo: WiFi is on SDIO, Bluetooth on uart7m0.
++	 * Let serdev/hci_bcm handle power, wake GPIOs, firmware patch and baud rate,
++	 * instead of the Rockchip rfkill-bt driver plus a userland attach tool.
++	 */
++	bluetooth {
++		compatible = "brcm,bcm43438-bt";
++		clocks = <&hym8563>;
++		clock-names = "lpo";
++		max-speed = <1500000>;
++		shutdown-gpios = <&gpio4 RK_PC4 GPIO_ACTIVE_HIGH>;
++		device-wakeup-gpios = <&gpio4 RK_PC5 GPIO_ACTIVE_HIGH>;
++		interrupt-parent = <&gpio0>;
++		interrupts = <RK_PA0 IRQ_TYPE_EDGE_FALLING>;
++		interrupt-names = "host-wakeup";
++		pinctrl-names = "default";
++		pinctrl-0 = <&bt_reset_gpio>, <&bt_wake_gpio>, <&bt_irq_gpio>;
++	};
+ };
+ 
+ &spi4 {
