@@ -592,7 +592,7 @@ driver_uwe5622() {
 	if linux-version compare "${version}" ge 5.15 && [[ "$LINUXFAMILY" == sun* || "$LINUXFAMILY" == rockchip64 || "$LINUXFAMILY" == rk35xx ]]; then
 
 		# Attach to specific commit
-		local uwe5622ver='commit:d2d6bc45c5ef9cefdd53e6c51cec3ba948b84972' # Commit date: Nov 13th, 2026 (please update when updating commit ref)
+		local uwe5622ver='commit:ef4ac088ae4cfb468843199e64d57589aacf22d0' # Commit date: Nov 22nd, 2026 (please update when updating commit ref)
 
 		display_alert "Adding" "Wireless drivers for Unisoc uwe5622 driver ${uwe5622ver}" "info"
 
