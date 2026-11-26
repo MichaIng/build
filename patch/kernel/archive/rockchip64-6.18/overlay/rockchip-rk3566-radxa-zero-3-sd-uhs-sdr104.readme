@@ -1,0 +1,11 @@
+### rk3566-radxa-zero-3-sd-uhs-sdr104
+
+Enables the UHS-I SDR50 and SDR104 modes on the microSD card slot of the Radxa ZERO 3E/3W.
+This raises the transfer rate of UHS-I cards from up to ~25 MB/s to up to ~75 MB/s.
+Cards without UHS-I support are not affected.
+WARNING! Some cards fail the SDR104 tuning ("All phases bad!") at some boots, so the kernel does not detect them.
+If the system is on such a card, it fails to boot then. Remove the overlay from /boot/dietpiEnv.txt on another computer to revert.
+The radxa-zero-3-sd-uhs-sdr50 overlay enables SDR50 only, with up to ~50 MB/s.
+The card stays in 1.8 V signaling mode until it is power cycled, which this board cannot do itself.
+On a regular reboot, the kernel switches the signaling voltage back to 3.3 V, so the boot ROM can read the card.
+WARNING! After an unclean reset, e.g. by a watchdog, kernel panic or SysRq, the board may fail to boot from a UHS-I card until it is unplugged from power.
